@@ -1,0 +1,219 @@
+---
+title: "03 Summary statistics"
+author: "Dr Juan H Klopper"
+output:
+  html_document:
+    toc: true
+    number_sections: false
+---
+
+<style type="text/css">
+h1 {color:#1a2451;}
+h2 {color:#ffbd4a;}
+h3 {color:#1a2451;}
+</style>
+
+![](KRG_elegant_logo_for_light_BG.png)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#setwd(getwd())
+```
+
+```{r Libraries, message=FALSE, warning=FALSE}
+library(readr)
+library(dplyr)
+```
+
+```{r Settin gthe working directory}
+setwd(getwd())
+```
+
+
+## Preamble
+
+By now you have a firm grasp of the use of R and can import and manipulate data.  Our job now, is to start to understand our data.  Data carries hidden knowledge within its many rows and columns.  As human being, we are incapable of seeing that information by just staring at the value in a spreadsheet.  Instead, we summaries the data, calculating single values that are representative of the data.
+
+Summary statistics, also known as descriptive statistics is the first step in the analysis of data.  It starts the process of unraveling the information in the data.  It also provides us with a good insight into the data and is a guide as to what we can expect from the statistical tests that we will ultimately conduct.
+
+In this tutorial we will look at _measures of central tendency_ and _measures of dispersion_.  The former calculates a single value that stands as representative of all the data point values for a variable.  These include the well known _mean_, _median_, and _mode_, with which most of us are familiar.  The latter includes _variance_, _standard deviation_, _range_, and _quantiles_.
+
+All of these tests are very simple to perform.  We will continue on our journey of discovering the verbs (functions) of the `dplyr` library.  They make analysis of an imported spreadsheet file a breeze.
+
+## Measures of central tendency
+
+### Mean
+
+The _mean_ or the _average_ is the sum total of all the data point values of a numerical variable divided by the total number of data point values.  The values $10,11,12$ sum to $33$ and since there are three values we have a mean of $11.  The `mean()` function is used to calculate the mean.
+
+```{r Calculating the mean}
+mean(c(10, 11, 12))
+```
+
+We are interested in using spreadsheet data, though, so let's import the dataset that we used before.  Make sure that you have imported the `readr` and `dplyr` libraries and that you have set the working directory after saving this R markdown file and the spreadsheet file in the same directory (folder).
+
+```{r Importing the spreadsheet file, message=FALSE, warning=FALSE}
+df <- read_csv("ProjectData.csv")
+```
+
+Let's have a look at the statistical variables (column names in row $1$).
+
+```{r Statistical variables}
+names(df)
+```
+
+We can calculate the mean of the ages of all the patients.
+
+```{r Calculating the mean of all the patients}
+mean(df$Age)
+```
+
+If we want to run this value to the nearest integer (whole number), we can use the `round()` function.  The first argument will be our `mean()` function and the second will be the number of decimal places that we want.  In this case, zero.
+
+```{r Rounding the mean of the ages}
+round(mean(df$Age),
+      digits = 0)
+```
+
+While this is interesting information, we probably want to divide the patients up into groups based on the sample space of one of the other variables.  This is easily achieved when the variable is categorical.  Even a numerical variable can be used to divide the patients into groups, though.  This is achieved by selecting cut-off values.  As an example, we could arbitrarily decide that all patients younger than $60$ are _young_ patients and all those that are $60+$ are _old_ patients.  For this example, we will choose the `Group` variable.  From the previous tutorial, we remember that the sample space included two values: `I` and `II`.
+
+While we could create two computer variables to hold vector objects, we can be more creative and use the `group_by` `dplyr` verb.  We can combine in with the `summarise()` verb.  An example might be the easiest way of explaining.
+
+```{r Calculting the mean age of each of the groups}
+df %>% 
+  group_by(Group) %>% 
+  summarise(average_age = mean(Age))
+```
+
+The code chunk above reads almost like an English sentence.  We start with the data tibble, `df`.  We then pipe it to the `group_by` verb, which does what is says!  We group the data by the chosen variable (in this case the `Group` variable).  We then pipe this grouping to the `summarise()` verb.  The argument in the `sumamrise()` verb is new.  First, we create a name that carries some meaning.  Here, i used the name `average_age`.  If I gave this code to someone else, or if I read it months later, I will know what I meant to do.  On the right-hand side of the equal sign comes the summary statistic that I want, the mean of the `Age` variable.  From the result you will see that the mean age of each of the two groups were calculated.
+
+In the code chunk below, we the same for the `Survey` column.
+
+```{r Mean of each of the survey answers}
+df %>% 
+  group_by(Survey) %>% 
+  summarise(average_age = mean(Age))
+```
+
+We note that the mean age of the patients choosing any one of the five ordinal categorical values for the simulated survey question was nearly the same.  Perhaps those that chose $5$ was slightly younger.
+
+### Median
+
+To calculate the median, we place all the numerical data point values for a variable in ascending or descending order.  We then simply divide them into two equal sets.  If there are an odd number of values, we take the middle value to be the median.  If there is an equal number of values, we take the average of the two middle values.
+
+As an example, the median of $11,12,16,19$ and $25$ is $16$ since there are two values less than and two values greater than $16$.  If the values were $10,12,12,14,15,17,19$ and $20$, we note that $14$ and $15$ are the middle two values, with three values on either side of them.  This makes the median $14.5$.
+
+Let's calculate both the mean and the median ages of the two group.  We will once again create an appropriate name of our median calculation.
+
+```{r Mean and median of the ages of the two group}
+df %>% 
+  group_by(Group) %>% 
+  summarise(mean_age = mean(Age),
+            median_age = median(Age))
+```
+
+The median is great for values that are not symmetric around the mean.  For instance, the mean of $12,14,16,15,12,13,14,13$ and $100$, would be a misrepresentation of the values.  The $100$ will bring the mean up to a value to is no longer representative of all of the data point values.
+
+### Mode
+
+The mode is very useful for categorical variables.  It simply returns the data point value that occurs most frequently.  If there are two values that are equal as the most frequent, both are listed and the variable is said to be _bimodal_,  we also get _trimodal_, and if even more, _multimodal_.
+
+To count the number of unique data point values we use the `aggregate()` function.  It is a bit cumbersome until you use it a couple of times.
+
+```{r Counting the unique values in a categorical variable}
+aggregate(data.frame(count = df$Survey),
+          list(value = df$Survey),
+          length)
+```
+
+Simply follow the recipe every tine you want to count the number of unique data point values.  From the result we see that the model was `1`, i.e. the value that was selected most in the survey question.
+
+Another way we can go about it is the now familiar `group_by()` and `summarise()` function.  We use the `n()` function, without an argument, to do the counting.
+
+```{r}
+df %>% group_by(Survey) %>% summarise(survey_count = n())
+```
+
+## Measures of dispersion
+
+Measures of dispersion give us an idea of how spread the data is.  Let's have a look at the common types.
+
+### Minimum and maximum
+
+The is the most extreme form of looking at dispersion.  It lists the smallest and the largest values.  The difference between the two is known as the _range_.
+
+In the code chunk below, we split the patients according to the group and calculate the minimum and maximum ages.  Once again, we give these values and appropriate name of our choice.  The functions for minimum and maximum are `min()` and `max()`.
+
+```{r Calculaing the minimum and maximum ages of the two groups}
+df %>% 
+  group_by(Group) %>% 
+  summarise(min_age = min(Age),
+            max_age = max(Age))
+```
+
+The `range()` takes a single vector of values as an argument.  It cannot be used when using the `dplyr` `group_by()` function.  Let's calculate the minimum and maximum value of the ages of all the patients.
+
+```{r Range of the ages of all the patients}
+range(df$Age)
+```
+
+### Standard deviation
+
+The standard deviation is the average difference between each value and the mean.  The `sd()` function accomplishes the task.  You should be familiar with the syntax by now.  Below is the mean and standard deviation of the ages of each of the two groups.
+
+```{r Standard deviation of the ages of each of the two groups}
+df %>% 
+  group_by(Group) %>% 
+  summarise(average_age = mean(Age),
+            std_age = sd(Age))
+```
+
+### Variance
+
+To calculate the standard deviation, i.e. the average difference between each data point value and the mean of a variable, we do subtraction.  Since some of the values will be less than and some larger than the mean, we will get negative and positive numbers.  If we sum them all up and divide by how many there are, we would get an answer of zero.  Therefor, we square every difference.  Squaring results in all values being positive.  Now we can divide by the number of values that their are.  This is the variance.  It is the square of the standard deviation, or seen from a different point of view, the standard deviation is the square root of the variance.
+
+Below we calculate the variance of the ages of the two groups.
+
+```{r Variance of the ages of the two groups}
+df %>% 
+  group_by(Group) %>% 
+  summarise(var_age = var(Age))
+```
+
+We can square the standard deviation of the group I age to chunk out our definition.
+
+```{r Squaring the standard deviation}
+11.53006^2
+```
+
+Bar the small rounding error, we indeed have the variance.
+
+### Quantiles
+
+Where the median divides the set of numerical data point values into two halves, we can make this division at any arbitrary fraction of the whole.  If we split is by the smallest quarter and the larger three quarters, we have what is referred to as the _first quartile_, also known as the _twenty-fith percentile_.  The median is then actually the _second quartile_ or fiftieth percentile.  The three-quarter one-quarter split is the _third_quartile_ or the seventy-fifth percentile.  For obvious reasons the minimum is the _zeroth_ quartile and the maximum is the _fourth quartile_.  Any percentile can be used, but the ones listed as the most common to use.
+
+The `quantile()` function performs the duty in this instance.  It is best to create separate vectors when using the `qunatile()` function.
+
+```{r Creating an age vector for group I patients}
+group_I_age <- df %>% filter(Group == "I") %>% select(Age)
+group_I_age <- as.vector(group_I_age$Age)
+```
+
+
+```{r Calculating the quantiles for the vector of values}
+quantile(group_I_age,
+         probs = c(0, 0.25, 0.5, 0.75, 1))
+```
+
+### Interquartile range
+
+The interquartile range is the difference between the third and the first quartile value.  It is used to detect statistical outliers.  If we multiply the interquartile range by $1.5$ and add this to the third quartile and subtract it from the first quartile, we get bounds, beyond which any value is a suspected statistical outlier.
+
+The `IQR()` function is used.
+
+```{r Calculating the IQR for the age of each group}
+df %>% 
+  group_by(Group) %>% 
+  summarise(iqr_Age = IQR(Age))
+```
+
