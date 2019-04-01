@@ -1,0 +1,160 @@
+---
+title: "Sampling distributions"
+author: "Dr Juan H Klopper"
+output:
+  html_document:
+    toc: true
+    number_sections: false
+---
+
+<style type="text/css">
+h1 {color:#1a2451;}
+h2 {color:#ffbd4a;}
+h3 {color:#1a2451;}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd(getwd())
+```
+
+## Preamble
+
+In statistics our aim to to discover information about a population or differences between populations. Populations are enormous and in most cases, we cannot get data from each subject.  Instead we pick representative samples from a population or populations and describe or compare those subjects only.  This saves time and money and makes discovery about the information we seek possible.  Inferential statistics is all about the analysis of our sample data and inferring those result onto the populations.
+
+Just as data point values from samples and populations come in patterns known as distributions, so does statistical values such as the mean, differences in means, standard deviations and so on.  These distributions are known as _sampling distributions_.
+
+Sampling distributions form the basis of inferential statistics.  They allow us to express common statistical entities such as confidence levels and _p_ values.  To see this connection, we need to look at the incredible _Central Limit Theorem_ (CLT).
+
+## The central limit theorem
+
+The CLT is one of the most beautiful theorems in all of statistics.  In this section, we will create a population, draw samples from it, and in the process develop a deep and meaningful understanding of inferential statistics.
+
+Let's consider then a population of $2000$ subjects.  This is a small population, but to keep our calculations simple, it will suffice.  Using the `runif()` function allows us to choose random data point values from a set of stated integers, following a discrete uniform distribution.  Each value in the domain has an equal chance of being selected at every turn during the process of selecting our $2000$ values.  We can draw a histogram to show the distribution of our population variable.
+
+```{r Two-thousand values from a discrete uniform distribution}
+set.seed(123)  # Seed the pseudo-random number generator for reproducible results
+population <- runif(2000,
+                    min = 11,
+                    max = 20)  # Choose 2000 random integers each with equal likelihood
+# Create a histogram with counts shown above each bin
+hist(population,
+     breaks = 10,
+     main = "Population variable",
+     xlab = "Variable",
+     ylab = "Count",
+     labels = TRUE,
+     xlim = c(11, 20),
+     ylim = c(0, 250))
+```
+
+The histogram shows that each value appears appears in our dataset with the counts being roughly equal.
+
+Now we consider doing some research on our population.  We select $30$ subjects at random and calculate the mean of the variable values.
+
+```{r Our first experiment}
+set.seed(123)
+mean(sample(population,
+            size = 30,
+            replace = TRUE)) # Calculate the mean of 30 random subjects
+```
+
+We note a mean of $15.9$.  Consider the following, though: _What if we started our experiment a week later?_  We would get a different random sample of $30$ subjects.  We can simulate this with seeding the pseudo-random number generator with a different value.  (Remember that we are only using the `set.seed()` function to get reproducible results and by omitting it, we would get different values each time we run the code.)
+
+```{r Repeating our experiment}
+set.seed(321)
+mean(sample(population,
+            size = 30,
+            replace = TRUE))
+```
+
+Now we have a mean of $15.6$.  What if we ran our experiment $10$ times, recording the mean each time?  Well, we would have $10$ _random alues_ of a statistical variable.  Yes indeed, a statistic such as the mean can be a variable!
+
+In the code chunk below, we use a `for` loop to run our experiment $10$ times, appending the mean of each run of $30$ subjects to an initial empty computer variable called `sample_10`. Then we create a histogram of the $10$ values.
+
+```{r Repeat study 10 times}
+sample_10 <- c()  # Creating an empty vector
+set.seed(123)
+for (i in 1:10){  # Looping though the experiment 10 times
+  sample_10 <- append(sample_10, mean(sample(population, size = 30, replace = TRUE)))}
+hist(sample_10,
+     main = "Ten repeat studies",
+     xlab = "Mean",
+     ylab = "Count")
+```
+
+Suddenly the distribution does not seem uniform!  Let's repeat our experiment $100$ times.  Each time we select $30$ random subjects and calculate a mean, adding it to the vector object `sample_100`.
+
+```{r Repeat study 100 times}
+sample_100 <- c()
+set.seed(123)
+for (i in 1:100){
+  sample_100 <- append(sample_100, mean(sample(population, size = 30, replace = TRUE)))}
+hist(sample_100,
+     main = "One-hundred repeat studies",
+     xlab = "Mean",
+     ylab = "Count")
+```
+
+Now this is interesting.  Here goes a thousand repeats.
+
+```{r Repeat study 1000 times}
+sample_1000 <- c()
+set.seed(123)
+for (i in 1:1000){
+  sample_1000 <- append(sample_1000, mean(sample(population, size = 30, replace = TRUE)))}
+hist(sample_1000,
+     main = "One-thousand repeat studies",
+     xlab = "Mean",
+     ylab = "Count",
+     ylim = c(0, 400),
+     labels = TRUE)
+```
+
+What we have here is the CLT in action.  A statistic (the mean in this example) tends to a normal distribution as we increase the number of times we randomly calculate it!  This is profound.  From our $1000$ repeats we see that by chance we would ony see a mean of $17$ or more `r 1 / 1000 *100`% of the time or less than $14.5$ `r 21 / 1000 *100`% of the time.  If we express this as fraction, that would be `r 1 / 1000` and `r 21 / 1000`.  Letting the cat out of the bag, these are probabilities, leading us to _p_ values!  In reality, we cannot repeat an experiment $1000$ times.  We would do it just once, i.e getting a different mean with a specific probability.  That once could be any one of the $1000$ experiments (or more) that we created above.
+
+## The deity experiment
+
+Let's take the big step and put all of this in perspective.  This will allow a thorough understanding of inferential statistics.
+
+Below, we simulate a new research project.  We set it up, though, such that we know all the values for a specific variable.  In this experiment, there are only $8000$ subjects in the whole population.  Imagine some rare disease, or laboratory experiment in which there are only $8000$ specific genetic individuals.
+
+In this experiment, we take two roles.  In the first, we are a researcher.  We think that the $8000$ subjects are distinct for a specific variable and actual make up two populations.  We want to know if there is a statistically significant difference between the two population for the variable under consideration.  We also take the role of an imaginary deity.  This deity knows that there is no difference between the two populations.  We simulate this by creating two sets of vectors, drawing $4000$ random values with the same parameters for each.
+
+```{r Creating two similar populations}
+set.seed(123)
+group_A_population <- sample(30:70,
+                             size = 4000,
+                             replace = TRUE)
+group_B_population <- sample(30:70,
+                             size = 4000,
+                             replace = TRUE)
+```
+
+Now we run an experiment $10000$ times.  Each time we take a random $30$ subjects from each population and calculate the mean of our variable for each group. We subtract the two means, so as to capture $1000$ differences in means.  We will then have a sampling distribution of $10000$ means.  As you can guess by now, the CLT guarantees a normal distribution. 
+
+```{r Drawing random samples 10000 times}
+sample_10000 <- c()
+for (i in 1:1000){
+  sample_10000 <- append(sample_10000,
+                         mean(sample(group_A_population, size = 30, replace = TRUE)) -
+                           mean(sample(group_B_population, size = 30, replace = TRUE)))
+}
+hist(sample_10000,
+     main = "Deity experiment",
+     xlab = "Difference between means",
+     ylab = "Count",
+     ylim = c(0, 300),
+     labels = TRUE)
+```
+
+This is, once again, profound!  Remember that in real life, we would only do our research experiment once.  Our difference in means would be one of the $10000$ above.  Theoretically the CLT is described as the number of experiments approaches infinity, but $10000$ already brings the point home.
+
+Imagine then that our one experiment was one that found a difference a $10.5$  From the approximation, we can deduce that that would only occur `r 2 / 10000` times.  We would express this as a statistically significant result and claim that there is a difference between the two populations.  Remember, though, as deity we set this up so that there never was a difference.  This, though, is inferential statistics.  It is based on calculations given that there is no difference between populations.  As humans, we decide on an arbitrary cut-off of say $0.05$ beyond which we claim a difference.  There might very well be, but that is not the way inferential statistics work.  It is based on theoretical sampling distributions for NO DIFFERENCES.
+
+```{r}
+curve(dt(x, df = 30), from = -3, to = 3, lwd = 3, ylab = "y")
+ind <- c(1, 2, 3, 5, 10)
+for (i in ind) curve(dt(x, df = i), -3, 3, add = TRUE)
+```
+
