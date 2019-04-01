@@ -1,0 +1,397 @@
+---
+title: "The built in R plots"
+author: "Dr Juan H Klopper"
+output:
+  html_document:
+    toc: true
+    number_sections: false
+---
+
+<style type="text/css">
+h1 {color:#1a2451;}
+h2 {color:#ffbd4a;}
+h3 {color:#1a2451;}
+</style>
+
+![](KRG_elegant_logo_for_light_BG.png)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd(getwd())
+```
+
+## Preamble
+
+## Data import
+
+```{r Library import, message=FALSE, warning=FALSE}
+library(readr)
+library(dplyr)
+```
+
+```{r Importing the ProjectData spreadsheet file, message=FALSE}
+df <- read_csv("ProjectData.csv")
+```
+
+```{r Variables}
+names(df)
+```
+
+## Strip plots
+
+Strp plots are also called dot plots.  The represent data point values for a variable along a single axis.  It is more common for these plots to visualize discrete numerical variables, but they can also be used for continuous numerical variables and for nominal categorical variable that are expressed as numerical values.  The latter is better represented by bar plots, though.
+
+Below, we create a strip plot to visualize _Age_ variable as an example of discrete data (since we only captured integer values).
+
+```{r Strip plot of age}
+stripchart(df$Age)
+```
+
+Our first impression is that this is not a very useful plot.  We have $500$ data point value and they all seem to be plotted on top of each other.  There is also no title and no _x_-axis label.  Let's start by adding some jitter to the dots to try and visualize all of them.  If there are a large number of data point values, this might not solve the problem.
+
+```{r Strip plot with jitter}
+stripchart(df$Age,
+           method = "jitter")
+```
+ This is slightly better, but to be honest, a box-and-whisker plot would probably be the default plot for numerical data such as this.  Let's carry on, though, and add a title and a _x_-axis title with the `main =` and the `xlab =` arguments.
+ 
+```{r Strip plot with titles}
+stripchart(df$Age,
+           method = "jitter",
+           main = "Age of patient cohort",
+           xlab = "Ages (in years)")
+```
+ 
+The `method = "stack"` argument creates nice _skyscrapers_ instead of the jitter used above.  This might be a better option.  Let's see.
+
+```{r Strip plot with the stack option}
+stripchart(df$Age,
+           method = "stack",
+           main = "Age of patient cohort",
+           xlab = "Ages (in years)")
+```
+In essence this is very much a bar plot, though, so let's take a look.
+
+## Bar plot
+
+Bar plots give an indication of the number of individual data point values from the sample space of a variable.  As such they are excellent for categorical variables, but can also be used for discrete numerical variables.  Since both categorical variables and discrete numerical values are well, _discrete_, the bars have gaps between them to indicate that each of items in the sample sapce for the variable is distinct from another.  They do not form a continuum as in continuous numerical variables.
+
+They height of each bar indicates the number of times an element from the sample space of a variable appears in the data.  There are a number of options for bar plots.  Let's take a look at these and also introduce some new options for plots in R.
+
+### Simple bar plot
+
+```{r Simple bar plot}
+barplot(table(df$Group),
+        main = "Number of patients in each group",
+        xlab = "Group",
+        ylab = "Count",
+        las = 1)
+```
+
+### Horizonatl bar plot
+
+```{r Horizontal bar plot}
+barplot(table(df$Survey),
+        main = "Survey question",
+        ylab = "Survey question answers",
+        xlab = "Count",
+        horiz = TRUE,
+        las = 1)
+```
+
+```{r Bar plot with labels}
+barplot(table(df$Survey),
+        main = "Survey question",
+        xlab = "Survey question answers",
+        ylab = "Count",
+        names.arg = c("Storngly disagree",
+                      "Disagree",
+                      "Neither",
+                      "Agree",
+                      "Strongly agree"),
+        las = 1)
+```
+
+### Patterned bar plot
+
+```{r Patterned horizontal bar plot}
+barplot(table(df$Survey),
+        main = "Survey question",
+        ylab = "Survey question answers",
+        xlab = "Count",
+        horiz = TRUE,
+        border = "black",
+        col = "grey",
+        density = 20,
+        las = 1)
+```
+
+### Colored bar plot
+
+```{r Colored bar plot}
+barplot(table(df$Survey),
+        main = "Survey question",
+        ylab = "Survey question answers",
+        xlab = "Count",
+        horiz = TRUE,
+        border = "black",
+        col = c("red", "grey", "grey", "grey", "grey"),
+        density = 20,
+        las = 1)
+```
+
+```{r Stacked bar plot}
+barplot(table(df$Group, df$Survey),
+        main = "Survey question per group",
+        xlab = "Survey question answers",
+        ylab = "Count",
+        border = "black",
+        col = c("black", "grey"),
+        legend = rownames(table(df$Group, df$Survey)),
+        density = 20,
+        las = 1)
+```
+
+### Grouped bar plot
+
+```{r Patterned bar plot in groups}
+barplot(table(df$Group,
+              df$Survey),
+        main = "Survey question per group",
+        xlab = "Survey question answers",
+        ylab = "Count",
+        border = "black",
+        col = c("black", "grey"),
+        legend = rownames(table(df$Group, df$Survey)),
+        density = c(20, 40),
+        beside = TRUE,
+        las = 1)
+```
+
+## Histogram
+
+The histogram gives a count of the number of times a value from a continuous numerical variable appears.  Since these variables are continuous, though, we have to create _bins_, i.e. lower and upper bounds between which the occurrences are counted.  Let's take a look at an example to make this clear using the `hist()` function.
+
+```{r Histogram of patient age with density pattern}
+hist(df$Age,
+     main = "Histogram of patient ages",
+     xlab = "Age (in years)",
+     ylab = "Count",
+     density = 10,  # Density pattern
+     las = 1)
+```
+
+It seem as if the default plot created bins in five year intervals so that we ended up with $10$ bins.  We can use the `break =` argument to change this behaviour.  The value that we pass to this argument wil determin ethe number of bins.
+
+```{r Histogram of ages with five bins}
+hist(df$Age,
+     breaks = 5,
+     main = "Histogram of patient ages",
+     xlab = "Age (in years)",
+     ylab = "Count",
+     las = 1)
+```
+
+```{r Histogram with labels}
+hist(df$Age,
+     labels = TRUE,  # Adding labels
+     main = "Histogram of patient ages",
+     xlab = "Age (in years)",
+     ylab = "Count",
+     ylim = c(0, 90),
+     las = 1)
+```
+
+Now we have $10$ year bins.  We can ctually pass a vector of value to determine the bins.  We include the minimum and maximum values to show the outer bounds.  Note that we need not create bins of equal size.
+
+```{r Histogram with specified bin boundaries}
+hist(df$Age,
+     breaks = c(min(df$Age),50, 70, 80, max(df$Age)),
+     main = "Histogram of patient ages",
+     xlab = "Age (in years)",
+     ylab = "Relative frequency")
+```
+
+Under these circumstances, we no longer have a count, but rather a relative frequency (fractional count).  This can also be forced with the `freq = FALSE` argument.
+
+You may wonder in which bins the border cases are included.  In the plot above, for example, we need to know if a patient who is $40$ years of age is counted in the left-most bin or in the larger (broader) bin.  By default, the inclusion is on the minimum border.   Therefor this patient will be counted in the broader bin.  The `right = TRUE` argument changes this behaviour to the upper bound value.
+
+```{r Histogram for more than one group}
+transparent_dark_grey = rgb(0.2, 0.2, 0.2, 0.5)
+transparent_light_grey = rgb(0.8, 0.8, 0.8, 0.5)
+hist((df %>% filter(Group == "I") %>% select(Age))$Age,
+     col = transparent_dark_grey,
+     main = "Age distribution  for each group",
+     xlab = "Age",
+     ylab = "Count")
+hist((df %>% filter(Group == "II") %>% select(Age))$Age,
+     col = transparent_light_grey,
+     add = TRUE)
+legend("topright",
+       legend = c("Group I", "Group II"),
+       col = c(transparent_dark_grey, transparent_light_grey),
+       pt.cex = 2,
+       pch = 15)
+```
+
+## Density plots
+
+```{r A simple density plot}
+plot(density(df$Age),
+     main = "Distribution of patient ages",
+     xlab = "Age (in years)",
+     ylab = "Density",
+     lwd = 2)
+```
+
+## Box and whisker plots
+
+These are the most common plots to show the distribution of numerical variables for one or more categorical or discrete groups.
+
+```{rBox plot of ages per group}
+boxplot(df$Age ~ df$Group,
+        col = c(transparent_dark_grey, transparent_light_grey),
+        boxwex = 0.4,  # Width of boxes as a fraction
+        main = "Age per group",
+        xlab = "Group",
+        ylab = "Age")
+legend("topright",
+       legend = c("Group I", "Group II"),
+       col = c(transparent_dark_grey, transparent_light_grey),
+       pt.cex = 2,
+       pch = 15)
+```
+
+## Scatter plots
+
+```{r Age vs weight}
+plot(df$Age, # Independent variable (x-axis)
+     df$Weight,  # Dependent variable (y-axis)
+     main = "Patient age vs weight",
+     xlab = "Age (in years)",
+     ylab = "Weight (in lbs)")
+```
+
+```{r Adding a regression line}
+plot(df$Age, # Independent variable (x-axis)
+     df$Weight,  # Dependent variable (y-axis)
+     main = "Patient age vs weight",
+     xlab = "Age (in years)",
+     ylab = "Weight (in lbs)")
+abline(lm(df$Weight ~ df$Age))
+```
+
+```{r Controlling the axes}
+plot(df$Age, # Independent variable (x-axis)
+     df$Weight,  # Dependent variable (y-axis)
+     main = "Patient age vs weight",
+     xlab = "Age (in years)",
+     ylab = "Weight (in lbs)",
+     axes = FALSE)
+# x-axis
+# Small tick labels
+par(tcl = 0.1)  # Tick length of +0.1 (protruding into plot)
+axis(1,
+     at = seq(30, 90, by = 1),  # From 30 to 90, stepsize 1
+     labels = FALSE)  # Don't add number labels
+# Slightly taller tick marks every 5 steps
+par(tcl = 0.2)
+axis(1,
+     at = seq(30, 90, by = 5),
+     labels = FALSE)
+# MAjor tick marks every 10 years
+par(tcl = -0.5)
+axis(1,
+     at = seq(30, 90, by = 10))
+# y-axis
+# Small tick marks every 1 lb
+par(tcl = 0.1)
+axis(2,
+     at = seq(110, 230, by = 2),
+     labels = FALSE)
+par(tcl = -0.5)
+axis(2,
+     at = seq(110, 230, by = 20))
+```
+
+```{r}
+set.seed(123)
+x_values = seq(1, 100, by = 1)
+y_values = cumsum(rnorm(100))
+plot(y_values,
+     type = "l")
+abline(lm(y_values ~ x_values), col = "orange")
+```
+
+
+## Multiple plots
+
+At times it makes sense to create more than one plot in a figure.  R allows for great control over placement of different plot.
+
+In the code below we use a single row with two columns for our layout.  We plot both a histogram and a pie plot of the same data.
+
+A quick note on pie plots:  Pie plots are not good at providing accurate visual information, and hence, were not even discussed in this tutorial.  Even the help section states the following: _Pie charts are a very bad way of displaying information. The eye is good at judging linear measures and bad at judging relative areas. A bar chart or dot chart is a preferable way of displaying this type of data._
+
+```{r Combining two plots in a row}
+grey_five <- c(rgb(0.1, 0.1, 0.1),
+            rgb(0.3, 0.3, 0.3),
+            rgb(0.5, 0.5, 0.5),
+            rgb(0.7, 0.7, 0.7),
+            rgb(0.9, 0.9, 0.9))  # Specifying five shades of grey
+par(mfrow = c(1, 2))  # One row, two columns
+barplot(table(df$Survey),
+        main = "Bar plots",
+        col = grey_five)
+pie(table(df$Survey), 
+    main = "Pie plots are bad",
+    radius = 1,
+    col = grey_five)
+```
+
+The graphical parameter fig lets us control the location of a figure precisely in a plot.
+
+We need to provide the coordinates in a normalized form as c(x1, x2, y1, y2). For example, the whole plot area would be c(0, 1, 0, 1) with (x1, y1) = (0, 0) being the lower-left corner and (x2, y2) = (1, 1) being the upper-right corner.
+
+Note: we have used parameters cex to decrease the size of labels and mai to define margins.
+
+```{r Specifying exact positions}
+# make labels and margins smaller
+par(cex = 0.7, mai = c(0.1, 0.1, 0.2, 0.1))
+# define area for the histogram
+par(fig = c(0.1, 0.7, 0.3, 0.9))
+hist(df$Age,
+     main = "Three plots of patient age")
+# define area for the boxplot
+par(fig = c(0.8 ,1 ,0 ,1 ),
+    new = TRUE)
+boxplot(df$Age)
+# define area for the stripchart
+par(fig = c(0.1, 0.67, 0.1, 0.25),
+    new = TRUE)
+stripchart(df$Age,
+           method = "jitter")
+```
+
+## Saving plots for your reports
+
+Most manuscripts include plots as figures.  Plots created in R can be saved to your computer drive.  Below we use the `png()` function to save portable network graphics files.  This is a common file type for pictures, with a small file size and good quality.
+
+The `png()` function allows us to specify a picture size (width and height).  The default unit is pixels.  R also provides for saving in other file types.  Look up `bmp`, `jpeg`, and `tiff` in the _Help_ tab on the bottom right panel in RStudio.
+
+Once the code for saving the file is complete, remember to use the `dev.off()` function.
+
+```{r Saving a file}
+png(file = "Fig 1.png",  # Directory or folder set by setwd(getwd())
+    width = 600,
+    height = 600)
+set.seed(1234)
+boxplot(rchisq(100, df = 2),
+               col = "gold",
+        boxwex = 0.4,
+        main = "c-Reactive Protein",
+        ylab = "CRP")
+dev.off()  # Search for dev.off in the Help tab
+```
+
+
+
