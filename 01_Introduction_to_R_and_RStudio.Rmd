@@ -1,0 +1,348 @@
+---
+title: "Introduction to R and RStudio"
+author: "Dr Juan H Klopper"
+output:
+  html_document:
+    toc: true
+    number_sections: false
+---
+
+<style type="text/css">
+h1 {color:#1a2451;}
+h2 {color:#ffbd4a;}
+h3 {color:#1a2451;}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+![](KRG_elegant_logo_for_light_BG.png)
+
+## Preamble
+
+Welcome to this course on medical statistics for domain experts (medical specialists and specialists in training).
+
+In South Africa, as in other parts of the world, the completion of a research project is mandatory during training.  Without this project, registration with the Health Professions Council as a specialist is not possible.  Trainees are required to be the lead investigator.  They may complete the project in the form of a mini-dissertation or submit it as a paper for publication (the latter together with a literature review).  External examiners are appointed to grade these projects.
+
+Unfortunately, almost no support with respect to data analysis is provided.  Statistics does not form an important part of undergraduate medical training and no formal training exists for postgraduate students. [Nirav Patel, Poobalan Naidoo, Martin Smith, Jerome Loveland, Theshni Govender, Juan Klopper.  South African surgical registrar perceptions of the research project component of training.  SAMJ.  Vol 106, no.2 (2016).]
+
+Over the past three years, I have taken on the role of statistician and data analyst for many of the projects in the Health Sciences Faculty.  I have created an award winning massive open online course on the Coursera platform, have many tutorials on YouTube, and four courses on Udemy.  All in an effort to help those wanting to learn about medical statistics.
+
+Towards the end of last year, I started putting together a series of formal face-to-face lectures in medical statistics to support our postgraduate students.  The aim is to empower them to do their own data analysis.  The skill to do this is an absolute necessity in a resource constrained research environment.  I furthermore view the ability to do data analysis as an integral skill for medical specialists.  It is armed with the knowledge of statistics that a specialist can critically view the published literature to inform their practice as independent practitioners.  Reading the introduction and conclusion sections of a paper and blindly believing every statement is not professionally acceptable.
+
+This lecture series will use the R language for statistical analysis.  The RStudio coding environment lends itself perfectly for the training in and use of R, the leading software for statistical computing.  Let's get going.
+
+## R markdown file
+
+Statistical analysis in R can be done suing a simple script (under the File menu or the Green PLUS button under it).  While completely acceptable, it is much more elegant to use an R markdown file.  It allows for the creation of a much richer research document.
+
+This document was created as an R markdown file.  It allows for the use of simple markdown to style the document; the end-result of which can be exported as a Word document, a web-page, or even a PDF.
+
+A new R markdown file can created from the File menu or from the drop-down menu containing the green PLUS symbol right below the File menu.  When a new file is created, choose and appropriate name for the file and add your name.  The rest of the new file creation pop-up text box can be left at their default values.
+
+The top of a new file is code written in YAML.  You will note the file name and the name of the author that you initially entered appears here, together with the current date.  You can change these value manually, but take care to preserve the structure. (The YAML code to add a table of content was added manually and can be copied if you so wish.  Addtional HTML code for heading colors and a logo was added and will be explained in class.  The date was also removed manually.)
+
+Every new R markdown file contains some template text.  Everything from the `## R markdown` section and below can be highlighted and deleted.
+
+Normal English sentences can be written anywhere on the page.  Headings are identified by hash-tag symbols, from one hash-tag, `#` to six hash-tags, `######`.  These are for decreasing sizes such that a single hash-tag is the largest text.  These are referred to as heading sizes.
+
+Words within an area of normal English can be italicized or written in bold face.  To achieve the former, place an underscore directly in front of and after the selected word(s).  Double underscores will be shown as bold face font.
+
+Words written within single tick marks are displayed as code when exporting the R markdown file as a webpage, Word document, or PDF file.  It is used for stylistic purposes in this course.  Number can be placed inside of dollar symbols.  This signifies the use of LaTex code for mathematical typesetting.  It is used in this course where appropriate.
+
+Code is written inside of _chunks_.  The shortcut keystroke for the creation of a chunk is __CTRL-ALT and I__ (or __CMD-OPT and I__ on a Mac).  Chunks start and end with three tick marks.  On a conventional keyboard, this is to the left of the `1` key at the top left.  The first line (directly after the first three tick marks) must contain the string `{r}`.  Chunks can be named and this lecture series follows this convention.  Names must be unique and are placed after the `r` above, i.e. `{r This is my first chunk}`.
+
+Chunks of code can contain comment lines, preceded by a hash-tag symbol, `#`.
+
+## Simple arithmetic
+
+Below, we create a code chunk and name it Addition.  We simply add some numbers.  Note the use of hash-tags inside of chunks.  Here they serve a different purpose.  They indicate comments and are all the text after a hash-tag is ignored when code is entered.
+
+Code chunks are executed by the keyboard shortcut showed in the code below.  Alternatively hit the right-facing, small green arrow to the right of the code chunk.
+
+```{r Addition}
+# The name Addition was given to the code chunk
+2 + 2 + 4  # Code entered
+# Hit SHFT-CTR ENTER (SHFT-CMD RETURN on a Mac) to execute the chunk
+```
+
+The result `[1] 8` appears.  The answer is indeed $8$.  In many cases, we are going to see more than one value as a result.  Each one is given a numerical name, starting at $1$, hence the `[1]`.
+
+The next few chunks are appropriately names and showcase some common arithmetical operations.  Look at the code comments (after the hash-tags) for explanation.  Leave your own code comments as notes for future reference.  You can also write normal English sentences between the code chunks.  Just remember to use hash-tags for the heading sizes.
+
+```{r Subtraction}
+8 - 3 - 1
+```
+
+```{r Multiplication}
+# Use the star symbol, that is SHFT-8 on most keyboards
+3 * 4
+```
+
+```{r Division}
+# Use the / symbol
+8 / 2
+```
+
+```{r Powers}
+# USe the ^ (SHFT-6 on most keyboards)
+3^2
+```
+
+## Mathematical functions
+
+R is in essence a _functional language_.  Below are four functions, `log()`, `log10()`, `exp()`, and `round()`.  These are in-built keywords that tell R to execute an instruction.  Arguments are passed to functions and these go inside of parentheses.  Functions use these values to act on.
+
+In the code chunk below, we calculate the natural logarithm of the number $10$.  The official keyword for the natural logarithm is `log()`.  The number $10$ is passed as an argument.
+
+```{r Natural logarithm}
+# The log() function uses Euler's number as base
+log(10)
+```
+
+Below are more mathematical functions in action.
+
+```{r Logarithm base 10}
+# When requiring the log-base-10 use the log10() function
+log10(1000)
+```
+
+```{r Exponents}
+# Using Euler's identity
+exp(1)
+```
+
+```{r Round to with two decimal places}
+# The round() function reduces the number of decimnal places
+# A second argument is passed to the round() function: digits = 2 indicating two decimal places
+# Note that arguments are separated by comma's
+round(1.2375,
+      digits = 2)
+```
+
+## Types of collections
+
+### Vectors and lists
+
+R stores sets of values or names as vectors (also called _atomic vectors_) and as lists.  These differ by the type of elements they contain.  All elements of an atomic vector are the same, whereas they can differ for a list.  The `c()` function is used to create vectors and lists.  Values are passed as arguments, with a comma in between each.  Below we see an example of an atomic vector of integers.
+
+```{r Atomic vector of integers}
+c(100, 200, 300, 400, 500)
+```
+
+We can really specify that the values are integers by using the `L` suffix.
+
+```{r Using the L suffix}
+c(100L, 200L, 300L)
+```
+
+Apart from _integer_ values, the lements may also be decimal values (also called floating point numbers or _doubles_), Boolean values (true or false), and characters (_strings_ or words).
+Numbers can usually be written as such in code.  Words or sentences must be placed inside of quotation marks.
+
+```{r Vector of Boolean value}
+c(TRUE, FALSE, FALSE, TRUE)
+```
+
+```{r Vector of characters}
+c("ARDS", "Pneumonia", "Pneumonia")
+```
+
+The `is.vector()` function can check if we have indeed specified a vector.
+
+```{r Checking on vectors}
+is.vector(c("ARDS", "Pneumonia", "Pneumonia"))
+```
+
+The `typeof()` function can check on the type of the elemnts of a vector.
+
+```{r Type of elements of a vector}
+typeof(c(TRUE, TRUE, FALSE))
+```
+
+The `str()` function, short for _structure_ gives all of the above information.
+
+```{r}
+str(c(TRUE, TRUE, FALSE))
+```
+
+Atomic vectors can be _nested_, but always remain flat.
+
+```{r Nested vectors are flat}
+c(1, 2, c(3, c(4, 5)))
+```
+
+Coercion attenps at transforming all element types to the same type.
+
+```{r A vector containing an integer, a double, and a Boolean value}
+c(1L, 2.0, FALSE, TRUE)
+```
+
+Note that `FALSE` is represented by a `0` and `TRUE` by a `1`.  This happens when elements are coerced into being a different type.  We can check if this coercion to numerical values has been effected, by using the `is.numeric()` function.
+
+```{r Chekcing to see if the values are numeric}
+is.numeric(c(1L, 2.1, FALSE, TRUE))
+```
+
+Lists can contain elements of different type and these elements will not be coerced.  The keyword `list()` is used.
+
+```{r Creating a list of different types}
+list(1L, 2.1, FALSE, TRUE, "R", c(1, "one"))
+```
+
+```{r Checking to see if the object is a list}
+is.list(list(1L, 2.1, FALSE, TRUE, "R", c(1, "one")))
+```
+
+The elemnts of a vector can be given a name.
+
+```{r Name each element of a vector}
+c(a = 1, b = 2, c = 3)
+```
+
+The `setNames()` function can simplify the process.
+
+```{r Using setNames}
+setNames(1:3, c("a", "b", "c"))
+```
+
+### Factors
+
+Factors help us dealing with categorical variables (words or strings).  Below is an atomic vector that contains elements of value `"a"` and `"b"`.
+
+```{r A vector with character elements}
+c("a", "b", "b", "a")
+```
+
+Clearly we have only two unique elements.  The `factor()` function will extract those unique values, called _levels_.
+
+```{r The unique elements in a character vector}
+factor(c("a", "b", "b", "a"))
+```
+
+We can specify the unqiue values (levels) even if one or more of them do not appear as an element in the vector.
+
+```{r Specifying the levels}
+factor(c("Female", "Female", "Female"), levels = c("Female", "Male"))
+```
+
+The `table()` function will count ow many times each level appears in the vector.
+
+```{r Using the table function to count unique elements}
+table(factor(c("Female", "Female", "Female"), levels = c("Female", "Male")))
+```
+
+
+Whether we create vectors or list, each one of our creations is termed an _instance_ of a type, i.e. `c(1, 2, 3)` is an instance of a vector type.  We can store these instances in our computer's memory as objects.
+
+## Computer variables
+
+As mentioned, instances of vectors and lists (among other things) can be stored in your computer's memory as an object.  The name given to the object is called a _computer variable_.  Each object is an instance of a certain type.  Below we create an instance of the type _vector_ (of integers) and store it as the computer variable name `sbp`.
+
+An object is assigned to a computer variable (name) by way of a leftward facing arrow, created by means of the less than and the minus signs.  The keyboard shortcut is __ALT and minus__ (__OPT and minus__ on a Mac).  Alternatively a simple equal sign, `=`, can be used, but the arrow is more quintessential R.
+
+```{r Computer variable}
+sbp <- c(120, 125, 95, 185, 110)
+```
+
+Now these values are stored under the computer variable name.  They can be recalled by simply typing in the variable name.
+
+```{r Recalling an object}
+sbp
+```
+
+We can make sure that `sbp` contains a vector object.
+
+```{r Checking to see if spb is a vector}
+is.vector(sbp)
+```
+
+You are free to come up with your own computer variable names.  A few hints:  
+1. Make the name memorable and descriptive (for when you view the code later and want to remember what data it contains)
+2. Don't use the keywords that R uses as functions
+3.  Start the word with a lowercase letter
+4.  Use number only at the end of a name
+5.  Don't use illegal characters such as spaces or symbols
+6.  Use more than one word and separate them with an underscore, i.e. `my_variable_name`
+
+## Creating random values
+
+Data point values for a statistical variables are distributed according to a pattern, called a _distribution_.  We can create these values at random and store them in objects.
+
+One such distribution is the uniform distribution.  All the values that can be randomly selected (think of pieces of paper in a bowel from which you can draw), have an even change of being chosen.
+
+Below we place the number $15$ through $85$in the proverbial bowl.  We instruct the `sample()` function to use these values (the first argument).  The second argument instructs the function that we want to do this $500$ times.  Be case $500$ is more than the actual values, we instruct the sample()` function to _put each number back in the bowl after selecting it_.
+
+You will also note the `set.seed()` function that precedes this random number selection code.  Any arbitrary integer can be passed as argument.  It forces the pseudo-random number generator to follow a fixed pattern and spit out the exact same values every time the code is run.  This is done here simply for reproducibility purposes.
+
+The `sample()` function as used below takes three arguments.  While the `sample()` function will return a different set of elements each time the code is excuted (generating waht is called pseudo-random numbers), we can force R to return the same values each time the code is run by using the `set.seed()` function.  For any given value passed as argument, the same random values will be returned.  This is helpful when learning R as we can all work with the same values.
+
+```{r Sampling from a set of integer values}
+set.seed(123)  # Forcing the same pseudo-random values
+age <- sample(18:85,  # Choose between 15 and 85 (inclusive)
+              500,  # Do this 500 times so that we end up with 500 random numbers
+              replace = TRUE)  # Replace every number for future selection after it is chosen
+```
+
+Next up, we select from a normal (bell-shaped) distribution.  We specify a mean of $120$ and a standard deviation of $10$ (more on this in later chapters).  Note that we place the `rnorm()` function, with its three arguments as the first argument inside of the `round()` function.  The second argument of the latter specifies that we want to round off each of the $500$ random values to zero decimal places.
+
+```{r A normal distribution}
+set.seed(123)  # Forcing the same pseudo-random values
+# Creating a function within a function
+control_group_var <- round(rnorm(500,  # Select 500 number from a normal distribution
+                                 mean = 120,  # Use a meanof 120
+                                 sd = 10),  # Use a standard deviation of 10
+                           digits = 0)  # Round to the nearest integer
+```
+
+Below, we create a second set of $500$ random values from a slightly different normal distribution.
+
+```{r Another normal distribution}
+set.seed(123)
+treatment_group_var <- round(rnorm(500,
+                                   mean = 123,
+                                   sd = 20),
+                             digits = 2)
+```
+
+Many other distributions are available.  Below we select from the $\chi^2$ distribution, with two degrees of freedom.
+
+```{r Chi-squared distribution}
+set.seed(123)  # Forcing the same pseudo-random values
+# Using the rcisq() function as fist argument in the round() function
+crp <- round(rchisq(500,  # Requiring 500 random values
+                    df = 2),  # Selecting two degrees of freedom
+             digits = 1)  # Rounding to the nearest single decimal place
+```
+
+We can also set up an atomic vector as sample space from which to draw values at random.  Below, we create four choices and make $500$ random selections.
+
+```{r Nominal categorical variable}
+set.seed(123)
+comorbidities <- sample(c("HT", "DM", "Obesity", "Substance abuse"),
+                        500,
+                        replace = TRUE)
+```
+
+Below we create one more computer variable from a uniform distribution.
+
+```{r Ordinal categorical variable}
+set.seed(123)
+survey <- sample(1:5,
+                 500,
+                 replace = TRUE)
+```
+
+## Quick look at statistical test
+
+Although this is only the first lecture, we will slip in a quick statistical test.  Below we conduct a Student's _t_ test to see if there is a significant difference between the two lists of numbers that we created above.
+
+```{r Student t test}
+t.test(control_group_var,
+       treatment_group_var,
+       var.equal = TRUE)
+```
+
+## Statistical variables
+
+The rest of this lecture will explain the different types of variables, i.e. categorical, numerical, etc.  Make your notes about this topic here.
