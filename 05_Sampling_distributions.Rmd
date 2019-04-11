@@ -18,6 +18,8 @@ knitr::opts_chunk$set(echo = TRUE)
 setwd(getwd())
 ```
 
+![](KRG_elegant_logo_for_light_BG.png)
+
 ## Preamble
 
 In statistics our aim to to discover information about a population or differences between populations. Populations are enormous and in most cases, we cannot get data from each subject.  Instead we pick representative samples from a population or populations and describe or compare those subjects only.  This saves time and money and makes discovery about the information we seek possible.  Inferential statistics is all about the analysis of our sample data and inferring those result onto the populations.
@@ -111,7 +113,7 @@ hist(sample_1000,
      labels = TRUE)
 ```
 
-What we have here is the CLT in action.  A statistic (the mean in this example) tends to a normal distribution as we increase the number of times we randomly calculate it!  This is profound.  From our $1000$ repeats we see that by chance we would ony see a mean of $17$ or more `r 1 / 1000 *100`% of the time or less than $14.5$ `r 21 / 1000 *100`% of the time.  If we express this as fraction, that would be `r 1 / 1000` and `r 21 / 1000`.  Letting the cat out of the bag, these are probabilities, leading us to _p_ values!  In reality, we cannot repeat an experiment $1000$ times.  We would do it just once, i.e getting a different mean with a specific probability.  That once could be any one of the $1000$ experiments (or more) that we created above.
+What we have here is the CLT in action.  A statistic (the mean in this example) tends to a normal distribution as we increase the number of times we randomly calculate it!  This is profound.  From our $1000$ repeats we see that by chance we would only see a mean of $17$ or more `r 1 / 1000 *100`% of the time or less than $14.5$ `r 21 / 1000 *100`% of the time.  If we express this as fraction, that would be `r 1 / 1000` and `r 21 / 1000`.  Letting the cat out of the bag, these are probabilities, leading us to _p_ values!  In reality, we cannot repeat an experiment $1000$ times.  We would do it just once, i.e getting a different mean with a specific probability.  That once could be any one of the $1000$ experiments (or more) that we created above.
 
 ## The deity experiment
 
@@ -152,13 +154,54 @@ This is, once again, profound!  Remember that in real life, we would only do our
 
 Imagine then that our one experiment was one that found a difference a $10.5$  From the approximation, we can deduce that that would only occur `r 2 / 10000` times.  We would express this as a statistically significant result and claim that there is a difference between the two populations.  Remember, though, as deity we set this up so that there never was a difference.  This, though, is inferential statistics.  It is based on calculations given that there is no difference between populations.  As humans, we decide on an arbitrary cut-off of say $0.05$ beyond which we claim a difference.  There might very well be, but that is not the way inferential statistics work.  It is based on theoretical sampling distributions for NO DIFFERENCES.
 
+From our deity experiment it was easy to recreate a study many, many times over.  In real-life, we only get to do our study once (with others perhaps replicating it later).  How then do we know how the histogram above should look like, given that we do not have access to all the repeat studies?  
+
+First of all, it is important to note that in mathematical statistics we deal with a smooth curve and not a frequency distribution (histogram) as above.  There are actual equations that draw smooth curves given our data.  These equations take only information from our one study to draw these curves, called cumulative distributions curves.  Statisticians have developed fantastical equations for any number of sampling distributions.
+
 ## The _t_ distribution
 
-One of the most common sampling distributions is the _t_ distribution.  
+One of the most common sampling distributions is the _t_ distribution.  If we knew the standard deviation for a variable in a whole population, we can create what is called the _z_ distribution.  It is bell-shaped with a mean of $0$.
 
-```{r}
-curve(dt(x, df = 30), from = -3, to = 3, lwd = 3, ylab = "y")
+Since we hardly ever know the standard deviation for a variable in a whole population, we make do with the _t_ distribution.  This sampling distribution requires only one parameter from our data and that is the sample size.
+
+We use the _t_ distribution when comparing a numerical variable between two groups.  It forms the basis for the famous Student's _t_ test, developed by William Cosset, while working at the Guinness Brewing Company.  The parameter we take from our sample is then the sample size minus the number of groups.  This is called the _degrees of freedom_ (DOF).  Since we are comparing two groups, with sample sizes $n_1$ and $n_2$, we will have a DOF value of $n_1 + n_2 - 2$.
+
+The _t_ distribution appears very much bell-shaped.  For larger sample sizes, this distribution actually approximates the normal distribution.
+
+In the graph below we see a dark line representing a DOF value of $30$.  Considering the mean at $0$, we see successive curves for DOF values of $1,2,3,4,10$ (from the bottom up).
+
+```{r The t distribution}
+curve(dt(x, df = 30),
+      from = -3, to = 3,
+      lwd = 3,
+      ylab = "Distribution",
+      xlab = "t statistic")
 ind <- c(1, 2, 3, 5, 10)
 for (i in ind) curve(dt(x, df = i), -3, 3, add = TRUE)
 ```
 
+## The $\chi^2$ distribution
+
+Another common sampling distribution is the $chi^2$ distribution.  It also takes one parameter from our sample being the DOF.  It is calculated a bit differently, though.
+
+We commonly use the $chi^2$ distribution when dealing with categorical variables.   In the graph below, we see a dark line representing a DOF value of $1$.  Successive curves have DOF values of $2,3,5$, and,$10$.
+
+```{r The chi-squared distribution} 
+curve(dchisq(x,
+             df = 1),
+      from = 0,
+      to = 10,
+      lwd = 3,
+      ylab = "Distribution",
+      xlab = "Statistic")
+ind <- c(2, 3, 5, 10)
+for (i in ind) curve(dchisq(x,
+                            df = i),
+                     0,
+                     10,
+                     add = TRUE)
+```
+
+## Conclusion
+
+We will see these sampling distributions in action when we conduct _t_ and $\chi^2$ tests.  Their meaning will become crystal clear then.
