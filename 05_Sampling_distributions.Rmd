@@ -152,6 +152,10 @@ This is, once again, profound!  Remember that in real life, we would only do our
 
 Imagine then that our one experiment was one that found a difference a $10.5$  From the approximation, we can deduce that that would only occur `r 2 / 10000` times.  We would express this as a statistically significant result and claim that there is a difference between the two populations.  Remember, though, as deity we set this up so that there never was a difference.  This, though, is inferential statistics.  It is based on calculations given that there is no difference between populations.  As humans, we decide on an arbitrary cut-off of say $0.05$ beyond which we claim a difference.  There might very well be, but that is not the way inferential statistics work.  It is based on theoretical sampling distributions for NO DIFFERENCES.
 
+## The _t_ distribution
+
+One of the most common sampling distributions is the _t_ distribution.  
+
 ```{r}
 curve(dt(x, df = 30), from = -3, to = 3, lwd = 3, ylab = "y")
 ind <- c(1, 2, 3, 5, 10)
