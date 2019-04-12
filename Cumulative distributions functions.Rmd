@@ -1,0 +1,75 @@
+---
+title: "Cumulative distribution functions"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd(getwd())
+```
+
+from https://chemicalstatistician.wordpress.com/2013/06/25/exploratory-data-analysis-2-ways-of-plotting-empirical-cumulative-distribution-functions-in-r/ 
+
+## Data
+
+```{r The air quality dataset}
+data("airquality")
+```
+
+## The empirical cumulative distribution function
+
+The empirical cumulative distribution function (eCDF) is a statistical function that Assigns each data point value for a numerical variable a probability of $\frac{1}{n}$.  The data point values are then sorted in ascending order.  For any given data point value, the assigned probabilities for all the values less than the given value is summed.  This step-function is denoted in two ways as shown in equation (1).
+
+$$\begin{align} &\hat{F}_n \left( x \right) \\ &\hat{P}_n \left( X \le x \right) \end{align}
+\tag{1}$$
+
+Since we are stepping through each data point vale, $x_i$, we can assign a value of $0$ or $1$ to each, as shown in equation (2).  This is obvious from context, as we are simply counting the probabilities of all the values less than the given data point value.  This step-function is known as the _indicator function_.
+
+$$I \left( x_i \le x \right) = \begin{cases} 1, \text{when } x_i \le x \\ 0, \text{when } x_i > x \end{cases} \tag{2}$$
+
+Finally, we have the eCDF in equation (3).
+
+$$\hat{P}_n \left( X \le x \right) = \frac{\sum_{i = 1}^n I \left( x_i \le x \right)}{n} \tag{3}$$
+
+In essence, we have just complicated the fact that we are simply counting how many values are less than the given data point value and divide that by the smaple size!
+
+## Creating random data point values
+
+Below, we create $100$ data point values form a normal distribution with a mean of $100$ and a standard deviation of $10$.
+
+```{r Creating random values form a normal distribution}
+set.seed(123)  # Seed the pseudo random number generator for reproducible results
+normal_vals <- rnorm(100,
+                     mean = 100,
+                     sd = 10)
+```
+
+We can view a simple histogram of these values.
+
+```{r Histogram of normally distributed random values}
+hist(normal_vals,
+     main = "Normal distribution",
+     xlab = "Values",
+     ylab = "Counts",
+     ylim = c(0, 30),
+     labels = TRUE,
+     col = "orange")
+```
+
+## Creating an eCDF plot
+
+First we need to use equation (3).
+
+```{r Creating the values for the eCDF}
+normal_vals_ecdf <- ecdf(normal_vals)
+```
+
+These values are then in actual fact, the quantile value for each data point value.
+
+```{r eCDF plot}
+plot(normal_vals_ecdf,
+     main = "eCDF",
+     xlab = "Values",
+     ylab = "Quantile")
+```
+
