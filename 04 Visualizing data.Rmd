@@ -1,0 +1,326 @@
+---
+title: " 04 Visualizing data"
+author: "Dr Juan H Klopper"
+output:
+  html_document:
+    toc: true
+    number_sections: false
+---
+
+<style type="text/css">
+h1 {color:#1a2451;}
+h2 {color:#ffbd4a;}
+h3 {color:#1a2451;}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd(getwd()) # Spreadsheet file and R markdown file in same folder
+```
+
+![](KRG elegant logo for light BG.png)
+
+## Introduction
+
+Summary statistics provide us with a single value, or at least a couple of values, that give us a good impression of our data.  It is true, though, that a _picture is worth a thousand words_.  Many presentations, posters, and published papers contain plots (graphs, figures).  They can convey a large amount of data and provide us with a deeper knowledge of our data.
+
+Base R can create publication ready plots.  There are also many packages available to create plots.  The most common is the `ggplot2` library.  In this lecture, though, we will use the newer `plotly` library.  It is built for the modern web and allows us to create plots for interactive content such as web pages, as well as static images, ready for submission to your favorite journal.
+
+The choice of plot depends greatly on the type of data that we wish to visualize.  We will start this lecture by looking at plots for categorical data.  During the lecture, we will first use the R base plotting tools, but quickly introduce the `plotly` library.  Make sure that it is installed using the _Packages_ tab in the bottom-right panel of RStudio.
+
+## Plots for categorical data
+
+#### Creating simulated data
+
+We start off by creating a nominal categorical variable, containing $100$ data point values, randomly selected from a sample space of four diseases.  We do this using the `sample()` function and remember to set the `replace =` argument to `TRUE`.  We store these $100$ values as an instance of the vector type and call it `diseases`.
+
+```{r Creating a nominal categorical data}
+set.seed(1234)  # Seeding the pseudo-random number generator
+diseases <- sample(c("Pneumonia", "COAD", "Bronchitis", "Asthma"),
+                   100,
+                   replace = TRUE)
+```
+
+We can take a look at how many times each of the sample space elements appear in our randomly selected dataset.  We use the `table()` function to achieve this.
+
+```{r Counting the number of each sample space element}
+table(diseases)
+```
+
+To extract a vector containing only the data point values (count of each sample space element), we can use the `as.numeric()` function, passing `table(cities)` as argument.
+
+```{r Extracting only the list of values}
+as.numeric(table(diseases))
+```
+
+If we simply want a list of the sample space elements we use the `names()` function.
+
+```{r Extracting the sample space elements}
+names(table(diseases))
+```
+
+Using the `table()` function and then extracting the count values with the `as.numeric()` function and the sample space elements using the `names()` functions provides us with all the data required to create a bar chart, ideal for nominal categorical variables.
+
+### Simple bar chart
+
+A bar chart is a great choice to display a count of a nominal categorical variable.  The built-in R `barplot()` function creates a simple, austere plot.  Look at the code chunk below.
+
+```{r Creating a simple bar plot}
+barplot(as.numeric(table(diseases)),
+        names.arg = names(table(diseases)),
+        main = "Presenting diseases",
+        xlab = "Pulmonary conditions",
+        ylab = "Count",
+        las = 1)
+```
+
+You will note that we have several arguments.  Technically, we really only needed the names of each bar and the count.  We use the `as.numeric()` function to extract the number of each of the sample space elements in our dataset.  Next up is a keyword argument called `names.arg =`.  With this argument we can give a name to each bar.  This name appears at the bottom of each bar.  Once again, we use the `names()` function to extract the data from a table of our `diseases` variable.  Note that we initially created an atomic vector with $100$ values.  Using the `tables()` function allows for the creation of a sample space list and a count.
+
+The `main =` argument allows us to enter a title for our plot.  Since the title is a string, the name is placed in quotation marks.  The `xlab =` and `ylab =` keyword arguments similarly allow us to add titles for the `x` and `y` axes.  The `lab = 1` argument turns the default vertically oriented _y_ axis numbers upright.  Leave the keyword argument out to see the difference.
+
+Now let's recreate the plot using the `plotly` library, sut to introduce the library and to show the differences from the built-in bar plot.  Plotly is imported using the `library()` function.
+
+```{r Importing Plotly, message=FALSE, warning=FALSE}
+library(plotly)
+```
+
+Take a look at the code chunk below.  Our aim is to recreate the plot above.
+
+```{r Plotly bar chart}
+p1 <- plot_ly(x = names(table(diseases)),  # A list of the elements of the categorical variable
+              y = as.numeric(table(diseases)),  # The list of counts
+              name = "Presenting diseases",  # A title for the plot
+              type = "bar")  # The plot type
+p1
+```
+
+Running this code in RStudio creates an interactive plot.  Hover over the elements to see more information to pop up.  There is also a bar that appears above the plot (top-right) that allows us to save a static image to our computer drive and perform a number of other convenient tasks such as zooming and panning.
+
+We can add a title and axes labels using the `layout()` function.  To do this, we use the pipe symbol.  With the `layout()` function we can add a main title using the `title =` argument.  The `xaxis =` and `yaxis =` arguments can contain lists of arguments using the `list()` function.  Below we add a `title =` list argument and in the case of the _y_-axis, we also turn off the default dark black line that runs across the _x_-axis at $y=0$.
+
+```{r Bar chart with title and axes labels}
+p2 <- plot_ly(x = names(table(diseases)),
+              y = as.numeric(table(diseases)),
+              name = "Diseases",
+              type = "bar") %>% 
+  layout(title = "Presenting diseases",
+         xaxis = list(title = "Pulmonary conditions"),
+         yaxis = list(title = "Count",
+                      zeroline = FALSE))  # Turns off the thick black line on the x-axis
+p2
+```
+
+Our plot is now similar to the original, but interactive, with a lot more features.  
+
+#### Importing a spreadsheet file
+
+Instead of the random dataset that we created above, let's import a spreadsheet file and use the `dplyr` library to extract the data that we require.
+
+```{r Importing the readr and dplyr libraries, message=FALSE, warning=FALSE}
+library(readr)
+library(dplyr)
+```
+
+```{r Importing the ProjectData spreadsheet file, message=FALSE}
+df <- read_csv("ProjectData.csv")
+```
+
+There are eight variables with $500$ records (rows).
+
+```{r Dimension of the dataset}
+dim(df)
+```
+
+To extract the names of the eight variables, we use the `names()` function.
+
+```{r Statistical variables}
+names(df)
+```
+
+The `Group` variable represents the group into which each patient was randomized, with the sample space being `I` and `II`.  We can imagine this being a trial, with patients in group I receiving a placebo drug (the control group) and patients in group II receiving the experimental drug.
+
+Let's use the `dplyr` library to count the number of each group.
+
+```{r Counting the number of patients in each group}
+df %>% group_by(Group) %>% 
+  summarise(group_count = n())
+```
+
+We can save this information as a small tibble.
+
+```{r Saving the group counts}
+group_size <- df %>% group_by(Group) %>% 
+  summarise(group_count = n())
+```
+
+We note $251$ patients in group I and $249$ patients in group two.  Since this is a nominal categorical variable, we can use a bar chart to represent the data.
+
+```{r Bar plot of groups}
+p3 <- plot_ly(x = group_size$Group,
+              y = group_size$group_count,
+              name = "Group count",
+              type = "bar") %>% 
+  layout(title = "Number of patients in each group",
+         xaxis = list(title = "Group"),
+         yaxis = list(title = "Count",
+                      zeroline = FALSE))
+p3
+```
+
+As exercise, let's look at the `Survey` variable.  In this simulated experiment it is meant to represent a choice given by a patient as a survey question.  The sample space as entered into the spreadsheet is `1,2,3,4,5`.  This could represent something like _Totally disagree_, _Disagree_, _Neither agree not disagre_, and so on.  It might also be a pain scale, with `0` being no pain and `5` being maximum pain.  The point being, it represents an ordinal categorical variable.  Let's look at the counts and save it as a tibble.
+
+```{r Saving the Survey count}
+survey_choice <- df %>% group_by(Survey) %>% 
+  summarise(survey_count = n())
+```
+
+Now for a bar plot of the data.
+
+```{r Bar plot of the Survey variable}
+p4 <- plot_ly(x = survey_choice$Survey,
+              y = survey_choice$survey_count,
+              name = "Survey count",
+              type = "bar") %>% 
+  layout(title = "Number of each choice selected",
+         xaxis = list(title = "Answer"),
+         yaxis = list(title = "Count",
+                      zeroline = FALSE))
+p4
+```
+
+## Plots for numerical data
+
+### Histograms
+
+Histograms are similar to bar charts in that they give a count of data point values.  In this case, though, the variable under consideration is numerical.  To create counts, we often _bin the values_ of the numerical variable.  This is a fairly easy concept to understand.  Imagine our sample space for a numerical variable ranges from $1$ to $10$.  Imagine also that decimal-value numbers are allowed.  Depending on the size of the data and the number of decimal places in each observation, we might only have only or two instances of the same value.  We can remedy this situation by partitioning the values, i.e. all values less than two, and then all values greater than or equal to two, but smaller than four, and then all values equal to or greater than four, but less than six, and so on.  We can then count the number of isntances in each bin and display this as a histogram.
+
+Let's consider the `Age` variable in our spreadsheet.  Here are the minimum and maxim ages.
+
+```{r}
+df %>% select(Age) %>% 
+  summarise(min_age = min(Age),
+            max_age = max(Age))
+```
+
+```{r}
+p5 <- plot_ly() %>% 
+  add_histogram(x = df$Age,
+                name = "Age") %>% 
+  layout(title = "Age distribution",
+         xaxis = list(title = "Age"),
+         yaxis = list(title = "Counts",
+                      zeroline = FALSE))
+p5
+```
+
+When we run this code chunk in RStudio, we get a histogram.  Note that it differs from a bar plot in that the _bars_ are next to each other, representing the fact that the data is continuous numerical and not catgeorical.  Hovering over each bar also shows the bin limits and how many patients fell into that partiuclar bin.
+
+Instead of absolute counts, we can also use the `histnorm =` argument to give a relative frequency count (fraction of $1.0$).
+
+```{r Histogram with relative frequency}
+p5 <- plot_ly() %>% 
+  add_histogram(x = df$Age,
+                name = "Age",
+                histnorm = "probability") %>% 
+  layout(title = "Age distribution",
+         xaxis = list(title = "Age"),
+         yaxis = list(title = "Relative frequency",
+                      zeroline = FALSE))
+p5
+```
+
+There are many ways to _code_ for the same result.  This provides for confusion at times, but also for great flexibility.  In the code chunk below is an example of recreating our original absolute count histogram, but with different syntax.  Take alook, noting the tilde symbol and the use of the `type =` argument as opposed to the `add_histogram()` function we used before.
+
+```{r}
+p6 <- plot_ly(df, x = ~Age, type = "histogram") %>% 
+  layout(title = "Age distribution",
+         xaxis = list(title = "Age"),
+         yaxis = list(title = "Count",
+                      zeroline = FALSE))
+p6
+```
+
+### Box-and-whisker plot
+
+The ubiqutous box-and-whisker plot portrays the spread of a numerical variable.  It is often used in conjunction with a split in the data along a categorical variable.  In the case of our dataset, we might consider the `Age` variable for patients in groups I and II.
+
+The center box indicates three value.  The middle line is the median, and the lower and upper bounds are the first and thrid quartile value.  As default, the whisker go out to $1.5$ times the interquesrtile range below and above the first and third quartiles.  These values are called the _lower_ and the _upper fences_.  Value beyond this are considered statistical outliers.  If there are no outliers, the whiskers indicate the minimum and maximum values for the variable.
+
+Le's take a look then at the age distribution of each of the group of patients.
+
+```{r Box plot of age of each group}
+p7 <- plot_ly(df,
+              color = ~Group,
+              y = ~Age,
+              type = "box",
+              colors = "BrBG",
+              boxpoints = "all",
+              jitter = 0.3) %>% 
+  layout(title = "Age distribution of each group",
+         xaxis = list(title = "Group"),
+         yaxis = list(title = "Age",
+                      zeroline = FALSE))
+p7
+```
+
+The boxes, whiskers and markers can be colored individually.  To do this, though, we need to create individual list of values from our data.  In the code chunk below, we prepare a monochrome plot that is suitable for submission to a journal.  We create separate lists for the ages of each group and create the boxes individually.
+
+```{r Creating age lists for each box}
+age_I <- df %>% filter(Group == "I") %>% select(Age)
+age_II <- df %>% filter(Group == "II") %>% select(Age)
+```
+
+```{r Monochrome box plot of ages for each group}
+p9 <- plot_ly() %>% 
+  add_boxplot(y = age_I$Age,
+              fillcolor = "rgb(100, 100, 100)",  # Dark grey
+              line = list(color = "rgb(20, 20, 20)"),  # Very dark grey
+              name = "Group I") %>% 
+  add_boxplot(y = age_II$Age,
+              fillcolor = "rgb(170, 170, 170)",  # Lighter grey
+              line = list(color = "rgb(20, 20, 20)"),
+              name = "Group II") %>%
+  layout(title = "Age distribution of each group",
+         xaxis = list(title = "Group"),
+         yaxis = list(title = "Age",
+                      zeroline = FALSE))
+p9
+```
+
+The `CRP` variable contains some outliers.  There are many arguments to manipulate the look of these markers.  Below we create tibbles for `CRP` values for each of the groups and show some of the arguments.  Most notably we change the shape to diamonds and we color the background of these outliers the same as the boxes.
+
+```{r Creating crp lists for each box}
+crp_I <- df %>% filter(Group == "I") %>% select(CRP)
+crp_II <- df %>% filter(Group == "II") %>% select(CRP)
+```
+
+```{r Monochrome box plot of crp for each group}
+p10 <- plot_ly() %>% 
+  add_boxplot(y = crp_I$CRP,
+              fillcolor = "rgb(100, 100, 100)",  # Dark grey
+              line = list(color = "rgb(20, 20, 20)"),  # Very dark grey
+              marker = list(symbol = "diamond",
+                            size = 10,
+                            color = "rgb(100, 100, 100)",
+                            line = list(color = "rgb(20, 20, 20)",
+                                        width = 2)),
+              name = "Group I") %>% 
+  add_boxplot(y = crp_II$CRP,
+              fillcolor = "rgb(170, 170, 170)",  # Lighter grey
+              line = list(color = "rgb(20, 20, 20)"),
+              marker = list(symbol = "diamond",
+                            size = 10,
+                            color = "rgb(170, 170, 170)",
+                            line = list(color = "rgb(20, 20, 20)",
+                                        width = 2)),
+              name = "Group II") %>%
+  layout(title = "CRP distribution of each group",
+         xaxis = list(title = "Group"),
+         yaxis = list(title = "c-reactive protein",
+                      zeroline = FALSE))
+p10
+```
+
+
+### Scatter plots
+

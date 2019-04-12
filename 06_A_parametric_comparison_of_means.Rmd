@@ -1,0 +1,246 @@
+---
+title: "A parametric comparison of means"
+author: "Dr Juan H Klopper"
+date: "February 21, 2019"
+output:
+  html_document:
+    toc: true
+    number_sections: false
+---
+
+<style type="text/css">
+h1 {color:#1a2451;}
+h2 {color:#ffbd4a;}
+h3 {color:#1a2451;}
+</style>
+
+![](KRG_elegant_logo_for_light_BG.png)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd(getwd())
+```
+
+## Preamble
+
+The time has come for us to do some real inferential statistics.  In this tutorial we will look at comparing the means for a numerical variable between two or more groups.  It is important to understand that the groups are made up of splitting your sample by the sample space of one of the categorical variable sin your dataset.  Note that this _splitting into groups_ can also be done by a numerical variable, but this variable will have to be converted to a categorical variable.  An example might be _age_.  We can groups all patients younger than $60$ years of age as belonging to a group called _young_ and everyone else belonging to a group called _not young_.  This necessitates a new variable in which the sample space will be these two new data point values.
+
+We will stick to the more common case of using one of the categorical variables to create two or more groups.
+
+## Student's _t_ test
+
+As quintessential example of a parametric comparison of two means, we will conduct Student's _t_ test.  This tests compares the means of numerical variable between two groups.  It is one of the most common tests in inferential statistics.
+
+Let's then consider our original dataset that we have been using all along.  We used the `setwd(getwd())` statement at the beginning of this R markdown file and saved it in the same directory or folder as the spreadsheet file that we will use.
+
+```{r Importing libraries, message=FALSE, warning=FALSE}
+library(dplyr)
+library(car)  # For Levene's test
+```
+
+```{r Importing he data, message=FALSE, warning=FALSE}
+df <- read.csv("ProjectData.csv")  # Using the built-in read.csv function
+```
+
+We remember that there are two values in the sample space of the `Group` variable.  We can use the `table()` function to count the occurrences of each.
+
+```{r Counting the categorical variable Group}
+table(df$Group)  # Count the occurences of each of the sample space values
+```
+
+To conduct Student's _t_ test, we will use the `t.test()` function.  We need to pass two lists containing the numerical variable under consideration as arguments.  There are a few ways to go about this.  Below, we create two list objects to achieve this.  Let's compare the ages between the two groups.  We used appropriately named computer variables and the `filter()` and `select()` function from the `dplyr` library to do this.  The added `pull()` function converts the extracted single column tibble object as a vector of values.
+
+```{r Creating two list objects to hold the ages}
+# Selecting only the Age column values but splitting those by the sample space
+# of the Group column
+group_I_age <- pull(df %>% filter(Group == "I") %>% 
+  select(Age))  # Only patients that have a data point value of I in the Group column
+group_II_age <- pull(df %>% filter(Group == "II") %>% 
+  select(Age))  # Only patients that have a data point value of II in the Group column
+```
+
+Now for the simple _t_ test.  We pass the two vectors (lists of age values) as arguments.  
+
+```{r Student t test comparing ages between the two groups}
+t.test(group_I_age,  # Age values of patients in group I
+       group_II_age,  # Age values of patients in group II
+       var.equal = TRUE)  # Stating that we are assuming equal variances
+```
+
+We note a _t statistic_ of $0.557$, a degrees of freedom (DOF) values of $498$,, and a _p_ value of $0.58$ (rounded).  We also note a confidence interval around the differences in the two means and the two actual means.  In between there is a statement about an alternative hypothesis.
+
+The _p_ value is more than $0.05$ and we would state that there is not a significant different in age between patients in group I and group II.  The two mean values are also easy to interpret.
+
+We need to spend some time on the other information, though.
+
+## Hypothesis testing
+
+The goal of inferential statistics is infer the results from a sample to a larger population.  To do this, we need to formulate a research question.  In our simple case this would be: _"Is there a difference in age between patients in the two groups?"_  This is indeed a proper question, since we can translate it back to the variable for which we have collected data point values in our sample of patients.  We have a numerical variable `Age` and a categorical variable `Group`.  We create two groups from the latter as it has a sample space of two elements, i.e. `I` and `II`.
+
+As good scientists we set a __null hypothesis__, which we accept as the truth unless gathered evidence shows the contrary.  This null hypothesis always assume that our research question returns a _not true_ value.  In this case: _"No, there is no difference between the ages of the two groups."_  More specifically, we state that the difference in means is $0$.
+
+Now, we need to specify an __alternative hypothesis__.  This is the hypothesis that we __accept__ when evidence shows that we can __reject__ the null hypothesis.  This is what happens when we state that there is a _statistically significant difference between the (mean) ages of the two groups_.
+
+This decision is based on a _p_ value and an arbitrary cut-off, known as the $\alpha$ value.  It is customary to set this as $0.05$, such that a _p_ value of less than $0.05$ leads us to reject our null hypothesis and accept our alternative hypothesis.  When the _p_ value is not less than $0.05$, we fail to reject our null hypothesis and state that there is no significant different between the (mean) ages of the two groups.
+
+## Degrees of freedom and the _t_ distribution
+
+The DOF value in a _t_ test is simply the the sample size minus two (because we have two groups).  Since we had a sample size of $500$, we have a DOF value of $498$.
+
+In the previous chapter we looked at the _t_ distribution.  This is a sampling distribution and _simulates_ all the possible differences in means that we could find if we could do our research over and over again.  Since we cannot, the _t_ distribution uses the DOF value to create a theoretical distribution.  Let's look at this distribution with a DOF of $498$.
+
+```{r}
+curve(dt(x, df = 498),
+      from = -3, to = 3,
+      lwd = 2,
+      main = "t distribution for 498 degrees of freedom",
+      ylab = "Distribution",
+      xlab = "t statistic")
+```
+
+The difference in means for our two set of ages was $0.585$.  This is converted to a _t_ statistic with the use of a pooled variance for the whole sample.  The _t_ distribution above is a sampling distribution of all possible _t_ statistic values (based only on the DOF value).  As an aside, if we knew the standard deviation of a variable in the whole distribution, we would not need the _t_ distribution, but would instead use the _z_ distribution (from the standard normal distribution).
+
+The _t_ statistic was $0.557$.  Let's place this on our plot.
+
+```{r }
+curve(dt(x, df = 498),
+      from = -3, to = 3,
+      lwd = 2,
+      main = "t distribution for 498 degrees of freedom and the t statistic",
+      ylab = "Distribution",
+      xlab = "t statistic")
+abline(v = 0.557)
+```
+
+Of particular importance here, is our null and alternative hypothesis.  We stated a null hypothesis of no difference in ages and an alternative hypothesis of a difference.  We did not state that group I patients will be older or younger than those in group II.  The difference in means would also be either positive or negative based in which mean we subtracted from which mean.  This is termed _a two-tailed alternative hypothesis_ and is the proper standard in hypothesis testing.
+
+This all means that we have to replicate the _t_ statistic on the other side of the graph.
+
+```{r Out two-tailed hypothesis}
+curve(dt(x, df = 498),
+      from = -3, to = 3,
+      lwd = 2,
+      main = "t distribution for 498 degrees of freedom and the two-tailed t statistic",
+      ylab = "Distribution",
+      xlab = "t statistic")
+abline(v = 0.557)
+abline(v = -0.557)
+```
+
+The area under the _t_ distribution curve (for whatever DOF value) is $1$.  The areas under the curve from negative infinity to our left-hand side _t_ statistic and from our right-hand side _t_ statistic to positive infinity is calculated.  This is the two-tailed _p_ value.
+
+If we could reasonably convince our audience that one mean would be higher than the other, we could calculate a one-tailed _p_ value.  Depending on how we stated this (which group was higher), we would either have the area under the curve to the left or right of the _t_ statistic as our ultimate _p_ value.
+
+As a bit of fun, we can add two vertical lines that would represent an area of $0.05$ (that is $0.025$ on either side).  For $498$ DOF, those _t_ statistics (known as _critical values_) would be about $-1.96$ and $1.96$.
+
+```{r Indicating the crtical t values}
+curve(dt(x, df = 498),
+      from = -3, to = 3,
+      lwd = 2,
+      main = "Critical t statistic values for a DOF valueof 498",
+      ylab = "Distribution",
+      xlab = "t statistic")
+abline(v = 0.557)
+abline(v = -0.557)
+abline(v = -1.96,
+       col = "red")
+abline(v = 1.96,
+       col = "red")
+```
+
+It is now clear that our _t_ statistic has an area under the curve way more than the critical _t_ statistic.  This represents an $\alpha$ value of $0.05$.
+
+## The condifence interval
+
+A confidence interval in this setting refers to the difference in means.  Remember that we have taken samples from population.  Five-hundred of them.  Through hypothesis testing, we actually want to know if these are two different populations (Groups I and II might have been chosen such that we suspect some differences, i.e. receiving a different treatment).
+
+Since we are dealing with inferential statistics, we want to infer this difference in means to the underlying populations.  Because we only have a sample of each, we know that this difference will not be accurate.  We can _take a guess_ at where the difference in means would lie.
+
+To do this we set a confidence level, typically $95$%.  This will given us a symmetric value below and above our difference in mean.  A confidence interval.  This interval does not state that we are $95$% confident that the true difference in means falls between the two values!  It means that of we repeated the study $100$ times (each time will have difference interval values), that in $95$% of them, the true population difference would fall between the interval values.  We don't now whether our current intervals are one of the correct $95$% or the incorrect $5$%>
+
+To calculate the confidence interval for the difference in means, we construct a _t_distribution around a mean difference of our current mean difference (for a given DOF value) and find the values which will represent $2.5$% of the curve on either side of the middle.
+
+## Comparing the means of two groups with unequal variances
+
+Student's _t_ test as was used above assumes that there is a near equal variance for the numerical variable in the two groups.  Let's take a look at the variances in age.
+
+```{r Variance in age fro our two groups}
+df %>% group_by(Group) %>% 
+  summarise(VAR = var(Age))
+```
+
+For the units in which age in measured (years and in the case of variance $\text{years}^2$), this is not a big difference.
+
+There is a test that can investigate this, though, and it is Levene's test.
+
+The `car` library contains the `leveneTest()` function.  We can use a formula as below to investigate the differences in variances.  The formula uses a tilde symbol and is pretty intuitive.
+
+```{r Levene test for equal variances}
+leveneTest(df$Age ~ df$Group)
+```
+
+Since our _p_ value for this test was not less than $0.05$, we do not reject the null hypothesis which is that there is no difference in the variances.
+
+If there was, we would simply use the `t.test()` function, but use the keyword argument and value `var.equal = FALSE`.
+
+## Paired samples
+
+Our dataset does not contain statistical variables that we might use for paired samples.  Examples would have been the `CRP` variable for instance.  We might have measured this variable before and after an intervention.  When this is done, there is a dependence between the two sets of variable that we could investigate.  A _t_ test comparing the means of the before and after values.  Be careful, as we are no longer creating two groups by way of a categorical variable.  To do this, we might calculate the difference between the before and after values and investigate the differences in means between these differences for two groups.
+
+Here, though, we are looking at matched pairs of value.  In this case we would still use the `t.test()` function, but use the `paired = TRUE` keyword argument.
+
+## Comparing more than two means
+
+If we want to compare more than two means, we have to use analysis of variance (ANOVA).  This is a fundamental test using the _F_ distribution.  It is actually the basis for many statistical analysis.  here we will simply use it for comparing the means of more than two groups.
+
+Since we have five elements in the `Survey` categorical variable, let's compare the mean ages between all five groups.  First, we make sure than the `Survey` statistical variable is seen as categorical.  The `factor()` function achieves this.  We also specify the actual elements in the order that we please, through the use of the `levels = ` argument.
+
+```{r Converting Survey to a categorical variable}
+df$Survey <- factor(df$Survey,
+                    levels = c(1, 2, 3, 4, 5),
+                    labels = c("Strongly disagree",
+                               "Disagree",
+                               "Neutral",
+                               "Agree",
+                               "Strongly agree"))
+```
+
+Now we use the `aov()` function to conduct our ANOVA.  The tilde symbol is used to build a _formula_.  As used below, it states that we wish to compare the `Age` values according to the groups created by the sample space of the `Survey` variable.
+
+```{r Using ANOVA to compare the means of the ages of the five groups}
+anova_age_survey <- aov(df$Age ~ df$Survey)
+summary(anova_age_survey)
+```
+
+We note a _p_ value of more than $0.05$ and hence we do not reject a null hypothesis which would state that there is no difference in the ages of the five groups.
+
+If and only if the _p_ value was less than our chosen $\alpha$ value, would we do what is called _post-hoc_ analysis.  That is where we actually try and find out between which of the more than two groups (five in this case) the differences actually are.  When the _p_ value is more than the chosen $\alpha$ value, we __DO NOT__ do post-hoc analysis.  For the sake of illustration, we will do it here, though.
+
+There are many post-hoc analysis.  One of the most often used is _Tukey's test_, which we seen in action below.
+
+```{r Tukey post hoc test}
+TukeyHSD(anova_age_survey)
+```
+
+We do not find statistically significant differences between any of the pairs.  If we took the time, as we always should, we could have investigated the summary statistics and a box-and-whisker plot of this data.  It would have been clear that we were not going to find statistically significant differences.
+
+```{r Summary statistics of ages for each answer group}
+df %>% group_by(Survey) %>% 
+  summarise(Ave = mean(Age),
+            SD = sd(Age),
+            MIN = min(Age),
+            MED = median(Age),
+            MAX = max(Age),
+            IQR = IQR(Age))
+```
+
+```{r Box plot of ages for each answer group}
+boxplot(df$Age ~ df$Survey,
+        main = "Age distribution for age answer to the survey question",
+        xlab = "Survey quation answer",
+        ylab = "Age")
+```
+
+## Conclusion
+
+The comparisons of means are some of the most commonly used statistical tests.  While they are easy to implement, we will see in the next chapter, that they are based on a number of assumptions which must be investigated before they are used.

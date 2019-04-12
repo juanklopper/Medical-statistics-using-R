@@ -328,6 +328,37 @@ df <- df %>% mutate(Weight_kg = Weight / 2.21)
 names(df)
 ```
 
+One more important use for the `mutate()` function is the creation of a new categorical variable by _binning_ a numerical variable.  With _binning_ we refer to creating lower and upper bounds and assigning a sample space element for a categorical variable for each numerical data point value.
+
+To do this, let's first look at the `pull()` function.  It extracts a columns (or selected data point values in a column) as a list of values.
+
+```{r Extracting }
+crp <- pull(df %>% select(CRP))
+```
+
+We can now, for instance, decide to create three bins, by dividing the data point values for the `CRP` variable into three equaly-sized bins (depending if the sample size is divisible by the number of bins we wish to create and if there are ties in the values).
+
+```{r Creating three bins}
+cut(crp,
+    3)
+```
+
+Now we note a categorical data point value for each of the $500$ numerical `CRP` values.  Because we did not provide three sample space values, we note (at the bottom), three _Levels_ names.  Levels indicate that this is a categorical variable and then states the elements in the sample space.  The `(` and `]` notation is mathematical in nature.  The former indicates an open domain and the latter a closed domain.  So for the first element we will have values from $4.49$ to $6.53$.  The latter is included, i.e. if a data point value is actually $6.53$, it will be included in that bin.
+
+Let's define our our data point values for the sample space, perhaps `Low`, `Medium`, and `High`.  We also use the `mutate()` function to create  a new variable to this new categorical variable.  We will call it `CRP_group`.
+
+```{r Creating a new categorical variable}
+df <- df %>% mutate(CRP_group = cut(pull(df %>% select(CRP)),
+                                    3,
+                                    labels = c("Low", "Medium", "High")))
+```
+
+We can use the `table()` function to count the elements in the sample space of our new variable.
+
+```{r Counting the Low Mediam and High data point values}
+table(df$CRP_group)
+```
+
 ## Conclusion
 
 There are more verbs in the `dplyr` library.  We will meet them in future tutorials.

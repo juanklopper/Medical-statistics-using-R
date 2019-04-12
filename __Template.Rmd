@@ -1,0 +1,25 @@
+---
+title: "0"
+author: "Dr Juan H Klopper"
+date: "February 21, 2019"
+output:
+  html_document:
+    toc: true
+    number_sections: false
+---
+
+<style type="text/css">
+h1 {color:#1a2451;}
+h2 {color:#ffbd4a;}
+h3 {color:#1a2451;}
+</style>
+
+![](KRG elegant logo for light BG.png)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#setwd(getwd())
+```
+
+## Preamble
+

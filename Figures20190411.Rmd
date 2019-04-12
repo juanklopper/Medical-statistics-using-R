@@ -1,0 +1,79 @@
+---
+title: "Figures"
+author: "Dr Juan H Klopper"
+date: "April 11, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Libraries
+
+```{r message=FALSE, warning=FALSE}
+library(readr)
+library(dplyr)
+```
+
+```{r message=FALSE, warning=FALSE}
+df <- read_csv("ProjectData.csv")
+```
+
+## Categorical
+
+```{r}
+table(df$Group)
+```
+
+```{r}
+table(df$Survey)
+```
+
+```{r}
+barplot(table(df$Survey),
+        main = "Survey answers",
+        xlab = "Choices",
+        ylab = "Counts",
+        horiz = TRUE,
+        col = c("darkgrey", "lightgrey", "lightgrey", "lightgrey", "lightgrey"),
+        las = 1)
+```
+
+```{r}
+barplot(table(df$Group,
+              df$Survey),
+        beside = TRUE,
+        legend = rownames(table(df$Group,
+                                df$Survey)))
+```
+
+## Numerical data
+
+```{r}
+hist(df$Age,
+     main = "Age distribution",
+     xlab = "Age",
+     ylab = "Counts",
+     las = 1,
+     breaks = 5,
+     labels = TRUE,
+     ylim = c(0, 170))
+```
+
+```{r}
+plot(density(df$Age))
+```
+
+```{r}
+boxplot(df$Age ~ df$Survey,
+        main = "Age distribution",
+        xlab = "Survey answers",
+        ylab = "Age")
+```
+
+```{r}
+plot(df$Age,
+     df$Weight)
+```
+
