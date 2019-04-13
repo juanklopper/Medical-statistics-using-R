@@ -1,0 +1,193 @@
+---
+title: "Correlation and linear regression models"
+author: "Dr Juan H Klopper"
+output:
+  html_document:
+    toc: true
+    number_sections: false
+---
+
+<style type="text/css">
+h1 {color:#1a2451;}
+h2 {color:#ffbd4a;}
+h3 {color:#1a2451;}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd(getwd())
+```
+
+![](KRG_elegant_logo_for_light_BG.png)
+
+## Preamble
+
+In the previous chapter, we compared the same numerical variable between two or more groups, the groups being created from the sample space elements of a categorical variable.
+
+Consider now two different numerical variables ,measured for each subject in an experiment.  This chapter looks at the correlation between these pairs of data point values and linear models that predict one of the variables given the other (or more variables).
+
+Correlation measures the relationship between the change in the values of one of the variable with respect to the other:  "How one *varies* as the other *varies*".  This variation defines the term *covariance*.
+
+Univariable linear regression models takes one of the numerical variables as a _dependent variable_.  The value of each data point value in this variable is then _predicted_ in a model, based on the data point values for another numerical variable, the _independent variable_.  Models with only single independent (predictor) variable are termed _univariate models_ and models with more than one independent variable are termed _multivariate models_.
+
+## Covariance
+
+Whereas variance looked as the difference between each data point value for a variable and the mean for the variable, covariance considers two numerical variables in correlation.  For two variables $x$ and $y$, the covariance can be calculated as shown in equation (1).
+
+$$cov \left(x,y \right) =\frac{\sum_i^n{\left( x_i - \bar{x}  \right) \left( y_i - \bar{i}  \right)}}{n} \tag{1}$$
+
+This equation simply goes through every pair (meaning that we need data point values for each variable in every pair, i.e. no missing data).  It subtracts the mean of the relevant variable from each data point value in turn and multiplies the two differences.  It then adds all of these multiplications and divides by the total sample size.
+
+The code chunk below, we import a spreadsheet file using the built-in `read.csv()` function.
+
+```{r Importing the dataset}
+df <- read.csv("ProjectIIData.csv",
+               header = TRUE)
+```
+
+Now we plot the `CRP` variable against the `Cholesterol` variable.  This means that each dot on the plot has as $x$ value the `CRP` value and as $y$ value, the `Cholesterol` value.
+
+```{r Scatter plot of the data}
+plot(x = df$CRP,
+     y = df$Cholesterol,
+     main = "Correlation between CRP and cholesterol",
+     xlab = "CRP",  # Variable listed first
+     ylab = "Cholesterol",  # Variable listed second
+     las = 1)
+```
+
+The data point values for the two variables were created such that there is some correlation between them.  As the values of one increases, so does the other.  Using the equation above, the covariance can be calculated, using the `cov()` command.  
+
+```{r The covariance between CRP and cholesterol}
+cov(df$CRP,
+    df$Cholesterol)
+```
+
+The covariance depends on the units in which the measurements took place, though.  It remains for us to standardize the covariance and to express a magnitude of this correlation.  
+
+##  Correlation coefficient
+
+The task remaining is accomplished by calculating the *correlation coefficient*.  It standardizes the covariance by dividing it by the product of the standard deviations of each of the variables and is shown in equation (2).  Note that the equation cancels the units involved and the result has a range of -1 to +1.
+
+$$r = \frac{cov \left( x, y \right)}{s_x s_y} \tag{2}$$
+
+This value *r* is also termed the *Pearson product-moment correlation coefficient* and the *Pearson correlation coefficient*.  The code snippet below calculates the correlation coefficient.
+
+```{r Calculating teh correlation coefficient}
+r = cov(df$CRP, df$Cholesterol) / (sd(df$CRP) * sd(df$Cholesterol))
+r
+```
+
+A value of +1 expresses absolute positive correlation and a value of -1 expresses absolute negative correlation.  In more human terms, it explains the *effect size*.  A value of below and above $-0.1$ and $+0.1$ represents a small effect size.  Values over $-0.3$ and $+0.3$ represent a medium effect size, and a values beyond $-0.5$ and $+0.5$ represent a large effect size.  This must always be seen in the context of the research question, though.  
+
+### Significance tests
+
+While the effect size is arguably of more importance, it remains popular to test for significance.  The null hypothesis being that there is no correlation ($r=0$).  
+
+The correlation coefficient can be used to calculate a *z* score.  Alas, the sampling distribution of *r* is not normal and *r* has to be to be transformed.  In the R programming language, the *t* statistic transformation is used and is shown in equation (3).
+
+$$t_r = \frac{r \sqrt{n-2}}{1 - r^2} \tag{3}$$
+
+The `cor.test()` function calculates the *t* statistic, degrees of freedom, *p* value, 95% confidence intervals around the correlation coefficient and the actual correlation coefficient.
+
+```{r Calculating the Pearson product moment correlation and p value}
+cor.test(df$CRP,
+         df$Cholesterol)
+```
+
+## Univariate linear regression
+
+In univariate linear regression, we aim to build a model that will predict the value of a dependent numerical variable given a single independent numerical variable.  In our contrived example, we might want to predict the `Cholesterol` data point value of a patient given the `CRP data point value.
+
+Univariate linear models are straight lines.  Consider the pairs of values created below created below.  The dependent, `dep` values are simply twice the independent, `indep`, values.
+
+```{r Creating data}
+indep <- c(1:10)
+dep <- 2 * indep
+```
+
+Let's plot this as a scatter plot.
+
+```{r Scatter plot of created data}
+plot(indep,
+     dep,
+     main = "Perfectly correlated data",
+     xlab = "Independent variable",
+     ylab = "Dependent variable",
+     las = 1)
+```
+
+When a patient has an independent variable data point value of $4$, we see that the data point value for their dependent variable is $8$.  A straight line can be drawn through all the data point values.  You might remember from school that the equation for a straight line is $y = mx + c$, where $y$ is the dependent variable value, $m$ is the slope (rise-over-run), $x$ is the independent variable value, and $b$ is the $y$ intercept (that is where $x-0$.)
+
+The equation for our perfect model would be $y = 2x$.  Below, we add this line, called a _regression line_ using the `abline()` function.  The `lm()` function as argument will be the focus of this section.
+
+```{r A regression line for our perfect model}
+plot(indep,
+     dep,
+     main = "Perfectly correlated data",
+     xlab = "Independent variable",
+     ylab = "Dependent variable",
+     las = 1)
+abline(lm(dep ~ indep))
+```
+
+Suffice it to say that we can now ply in any independent variable value and the model will calculate the value for the dependent variable.  For instance, a patient with an independent variable value of $3.5$ will be predicted to have a dependent variable value of $2 \times 3.5 = 7$.
+
+So, let's look at the `lm()` function.  It stands for linear model.  Linear models are fantastic beasts.  It calculates a line that minimizes the error between predicted values and true values.  Just to be clear, when given new data such as the $3.5$ above, our model predicts a dependent variable value of $7$.  It might be that we have just such a patient in the dataset that we kept a secret and that their dependent variable value was actually $8$.  The difference between the predicted and actual values is the _prediction error_, or more commonly, the _residual_.
+
+For fun, we use the `lm()` function on our perfect data.  The tilde, `~`, symbol build the formula for us, such that it reads: _"Predict the depenedent varaible value given the independent variable."_.
+
+```{r Linear model of our perfect data}
+perfect_model <- lm(dep ~ indep)
+summary(perfect_model)  # Printing a summary of the model
+```
+
+The `summary()` function of our model shows the residuals.  Since there were no differences between the predicted and actual dependent variable values for all $10$ samples, we see the summary statistics of $10$ zero values.  Note the rounding constraints of the calculation giving extremely small values, which are in fact equivalent to zero.
+
+Under the `Coefficients` section we see an `Estimate`.  The `(Intercept)` value is also zero (bar the rounding) and is the $y$ intercept for the straight line (when $x-0$), i.e. given an independent variable value of $0$, we expect a dependent variable value of $0$.  The `Estimate` for the `indep` variable is $2$, the slope of our line.  For every single unit rise in the value of our independent variable, the value of the dependent variable will rise by $2$.
+
+In real life, we never see perfect models.  Let's return to our CRP and cholesterol values model.  We use the `lm()` function to calculate a model.
+
+
+
+```{r A linear model for our dataset}
+uni_lin_model <- lm(Cholesterol ~ CRP,
+                    data = df)
+summary(uni_lin_model)
+```
+
+Above we did not use `$` notation, but instead specified the data frame object as second argument after the formula.
+
+Inspecting the model results we see the summary statistics of all the residuals.  We also see the intercept and slope for the regression line.
+
+```{r Plotting the data and regression line}
+plot(x = df$CRP,
+     y = df$Cholesterol,
+     main = "Correlation between CRP and cholesterol",
+     xlab = "CRP",  # Variable listed first
+     ylab = "Cholesterol",  # Variable listed second
+     las = 1)
+abline(uni_lin_model)
+```
+
+For any `CRP` value our model predict a `Cholesterol` value.  For most you can see that it is way off the actual value.  This error is minimized by this line, though.  Any other line would have bigger errors.
+
+We can also see an adjusted $R^2$ value.  This is an adjustment to the the square of the correlation coefficient we learned about above and is termed the _coefficient of determination_.  In essence, it states that our model explains $22$% of the variance in `Cholesterol`.  As an effect size, this is not very good, but still we note a _p_ value of less than $0.05$ declaring our model statistically significant.
+
+## Multivariate logistic regression
+
+As mentioned, we could have more than one independent variable.  For two the results would be a plane rather than a line, and for more than two variable, a hyperplane.  This is unimportant for our discussion.  The `lm()` function makes the calculation very easy.
+
+Below, we use both `CRP` and `Triglyceride` to predict `Cholesterol` (again, not very realistic, but it suffices for explanation).
+
+```{r}
+mult_lin_model <- lm(Cholesterol ~ CRP + Triglyceride,
+                     data = df)
+summary(mult_lin_model)
+```
+
+We see similar summary results, except that we now have two independent variables, each with their own estimate and _p_ value.  Overall the adjusted $R^2$ value is slightly higher and this model is better than our original.
+
+## Conclusion
+
+Correlation and linear regression models are fantastic tools for numerical data analysis and very easy to use in R.
