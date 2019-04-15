@@ -1,0 +1,288 @@
+---
+title: "Nonparametric tests"
+author: "Dr Juan H Klopper"
+output:
+  html_document:
+    toc: true
+    number_sections: false
+---
+
+<style type="text/css">
+h1 {color:#1a2451;}
+h2 {color:#ffbd4a;}
+h3 {color:#1a2451;}
+</style>
+
+![](KRG_elegant_logo_for_light_BG.png)
+
+## Preamble
+
+In the previosu chapter we learned that we cannot alsways use the common paranetric tests to anlayze our data.
+
+This chapter is all about the proper alternatives.  These non-parametric tests are not dependent upon the paraneters that we saw in the assumptions for the use of parameric tests.
+
+## The Wilcoxon rank-sum test
+
+The Wilcoxon rank-sum test is used in place of the unpaired sample _t_ test (Student's _t_ test).  In this siutation, the collected data point values do not meet the assumptions for the use of a parametric test.  It is, very confusingly, also known as the _Mann-Whitney U test_, the _Wilcoxon-Mann-Whitney test_ and the _Mann-Whitney-Wilcoxn test_. 
+
+Although the parametric assumptions are not required, this test does require that the data point values are ordinal in some way, i.e. that they can be ranked in order.
+
+All the data point values from the two groups are placed in the same set and ranked in ascending order.  The lowest value is assigned a rank of $1$ and so on, until the largest value, given the last (and highest) rank.
+
+The groups are again separated and the ranks in each grouped summed.  The null hypothesis is that these sums will be even in both groups.  This means that it is equally likely that a randomly selected sample selected from one group will be less than or greater than a randomly selected sample from the other group.
+
+When there are _ties_, the ranks associated with these are avergaed.  For example, if there are three values that are similar and if they were to start at rank $14$, they are initially each given the ranks $14$, $15$, and $16$.  The ranks are summed, $14+15+16$ which is `r 14+15+16`.  This is divided by $3$ (the number of ties) and then each is given this rank of $15$.  The next value up the scale is given a rank of $17$, since the three ties took up $3$ places.
+
+The ranks for each group is totalled as $R_1$ and $R_2$.
+
+So as not to place any group in an advantaged postion, due to the fact that one of the groups may have a much larger sample size, the respective _mean rank_ is subtracted from each total.  The equation for the mean rank in cases where either one or both of the groups have a sample size of less than $8$, is given in equation (1).  This results in a _U_ statistic.  It is the smaller of the two statistics which is then used to calculate a _p_ value.
+
+$$ {\overline{r}}_{i}=\frac{n_i \left( n_i + 1 \right)}{2} \\
+U_i = R_i - {\overline{r}}_{i}  \tag{1}$$
+
+In cases where __both__ groups have at least $8$ samples, equation (2) is used.  Here $n_1$ refers to the smaller of the two samples.
+
+$$ {\mu}_{R} = \frac{n_1 \left( n_1 + n_2 + 1 \right)}{2} \\
+{\sigma}_{R} = \sqrt{\frac{n_1 n_2 \left( n_1 + n_2 + 1 \right)}{12}} \\
+z = \frac{R - \mu_R}{\sigma_R}  \tag{2}  $$
+
+Note that in some textbooks, $\mu_U$ is given.  The equations are algebraically similar and is expressed in equation (3).
+
+$$ \mu_U = \frac{n_1 n_2}{2} \\
+\sigma_U = \sqrt{\frac{n_1 n_2 \left( n_1 + n_2 + 1 \right)}{12}} \\
+z = \frac{U - \mu_U}{\sigma_U} \tag{3}  $$
+
+In the case of equation (1) the _p_ value can be calculated using the _Monte Carlo method_, where a similar study group sample is created over and over again.  This creates a sample distribution against which the original $U$ is tested.  Alternatively, _U_ statistic tables are available.
+
+It is also possible to assume a normal distribution for the test statistic (as in equation (2) and equation (3)) and calculate from there.
+
+Also note that in the case of tied ranks, $\sigma$ must be calculated as in equation (4).
+
+$$ \sigma_U = \sqrt{ \frac{n_1 n_2}{12} \left[ \left(  n + 1\right) - \sum_{i = 1}^{k} \frac{t_i^3 - t_i}{n \left( n - 1 \right)} \right]} \tag{4}  $$
+
+In this equation $n = n_1 + n_2$, $t_i$ is the number of subjects sharing rank $i$, and $k$ is the number of distinct ranks.
+
+Measurement capabilities and rounding do effect the Wilcoxon rank-sum test.  If measurements are only accurate to a certain decimal value, two data point values will be given the same rank, even though they might not be equal given a more accurate measurement (more decimal values).  Rounding of numerical values have a similar effect.
+
+To investigate this test, we will create some simulated data and save it as a data frame object.
+
+### Creating data
+
+Below we create a data frame object with two statistical variables, `Group` and `CRP`.  The former is nominal categorical with a sample space containing two elements.  We will use this variable to construct two groups.  The latter variable is numerical and consists of $100$ values following a $\chi^2$ distribution with a degress of freedom value of $2$.
+
+```{r Creating data and a data.frame}
+set.seed(123)  # Seeding the pseudo-random number generator for reproducible results
+group <- sample(c("A", "B"),
+                100,
+                replace = TRUE)
+
+df <- data.frame(Group = group,
+                 CRP = round(rchisq(100,
+                                    2),
+                             digits = 1))
+```
+
+We can view this first six rows using the `head()` function.
+ 
+```{r Firt six rows}
+head(df)
+
+```
+
+### Conducting the test
+
+The `wilcox.test()` function will conduct our Mann-Whitney-U tests.  We use formula notation and seperately defined the data frame object using the `data = ` keyword argument.  Note that we could also have used the `df$CRP ~ df$Group` syntax omitting teh second argument.
+
+```{r Wilcoxon rank sum test}
+test1 <- wilcox.test(CRP ~ Group,
+                     data = df)
+```
+
+Let's look at the results of our test.
+
+```{r Results of the Wilcoxon rank-sum tests}
+test1
+```
+
+We note a test statistic and a _p_ value, which we can use similar to Student's _t_ test in our reports.
+
+As and aside, the `wilcox.test()` function also allows the use of data stored in two separate lists.
+
+```{r Alternative Wilcoxon rank-sum test format}
+grpA <- rnorm(50,
+              0,
+              1)
+grpB <- rchisq(50,
+               1)
+
+wilcox.test(grpA,
+            grpB)
+```
+
+### Arguments
+
+It is worthwhile to take a closer look at the arguments of this function.
+
+* `paired =`
+  * This can be set as `FALSE` (default), if the groups are independent or `TRUE` if they are dependent
+* `alternative = c()`
+  * Any one of `two.sided`, `less`,or `greater` depending on the alternative hypothesis
+* `mu = `
+  * Sets the expected difference in medians
+* `exact =`
+  * Performs an exact test
+  * Default is TRUE if total sample size less than $50$ and there are no ties
+  * Force the use of normal distribution approximation by setting to FALSE
+* `correct =`
+  * Either `TRUE` or `FALSE` (default is FALSE), with in the case of the former, applies continuity correction to the calculation of the _p_ value
+* `conf.int =`
+  * If set to TRUE, calculates the 95% confidence intervals of the median of all the differences between data point values for the two groups
+  * Also give the difference in the current case
+  * Can be approximated using bootstrapping
+* `conf.level =`
+  * Sets the confidence level
+* `na.action = `
+  * Determines what to do with null values, most commonly being `na.exclude`
+  
+  
+### Effect size of the Wilcoxon sum-rank test
+
+Effect size is used more commonly today.  For the Mann-Whitney-U test, this can be calculated approximately, reverting the _p_ value to a _z_ score using the `qnorm()` command.  The _z_ score is then expressed as an _r_ value using equation (5).
+
+$$ r = \frac{z}{\sqrt{n}} \tag{5}  $$
+
+### Example
+
+Let's look at an example of simulated data to see the process of choosing a non-paranetric tests in action.
+
+Given two groups, `Treatment` and `Control`, note the two sets of data point values for the variable `LDL`
+
+```{r Data for two groups}
+treatment <- c(1.8, 1.7, 6.9, 0.8, 2.1, 7.6)
+contrl <- c(4.1, 3.2, 6.8, 1.9, 3.0, 4.7)
+```
+
+A Shapiro-Wilk test shows that the first group is not from a normal distribution.
+
+```{r Shapiro-Wilk test}
+shapiro.test(treatment)
+```
+
+To make life easier, we create a data frame object from our two lists.
+
+Creating a `data.frame`
+
+```{r Creating a data.frame}
+df <- data.frame(LDL = c(treatment, contrl),
+                 Group = rep(c("Treatment", "Control"),
+                             each = 6))
+head(df)
+```
+
+Displaying a simple box plot gives us a great visual indicator of the data.
+
+```{r Box plot}
+boxplot(LDL ~ Group,
+        df,
+        main = "LDL for Control and Treatment groups",
+        xlab = "Groups",
+        ylab = "LDL")
+```
+
+The skewness in the data is clearly visible.
+
+No for conducting the Wilcoxon rank-sum test.
+
+```{r Wilcoxon rank-sum test}
+wilcox.test(LDL ~ Group,
+            data = df)
+```
+
+The $W$ statistic is the number of times that a data point value from the Treatment group is lower than that of the Control group.
+
+Sorting the data point values makes this easier to understand.
+
+```{r Sorting}
+treatment <- sort(treatment)
+contrl <- sort(contrl)
+treatment
+contrl
+```
+
+The `outer()` command check each value in the first list (in turn) against every value in the second list and returns a Boolean value based on the expression.  Below it checks for _less than_.
+
+```{r The outer() command to show the cases where teratment is less than contrl}
+outer(treatment, contrl, "<")
+```
+
+The `sum()` command will sum all the `TRUE` values.
+
+
+```{r Sum the TRUE values}
+sum(outer(treatment, contrl, "<"))
+```
+
+This is indeed the $W$ statistic given above.  Summing the ranks for the `Treatment` group, though, note the solution of $34$.
+
+```{r Rank of treatment group}
+sum(rank(df$LDL)[df$Group == "Treatment"])
+```
+
+To get the $W$ statistic used in the `wilcoxon.test()` command the rank of the other group is used, from which is subtracted equation (1) above.
+
+```{r}
+sum(rank(df$LDL)[df$Group == "Control"]) - ((6 * (6 + 1)) / 2)
+```
+
+Using the `conf.int =` argument gives the difference in location.
+
+```{r Difference in location}
+wilcox.test(LDL ~ Group,
+            df,
+            conf.int = TRUE)
+```
+
+The difference in location is the median of the differences between all $36$ pairs.
+
+```{r Difference between pairs}
+median(outer(treatment, contrl, "-"))
+```
+
+
+The difference in location can be calculated using bootstrapping.
+
+```{r Creating a bootstrapping function}
+library(boot)
+med.dif <- function(d, i) {
+   tmp <- d[i,] 
+   median(tmp$LDL[tmp$Group=="A"]) - median(tmp$LDL[tmp$Group=="B"])
+ }
+```
+
+```{r}
+boot.out <- boot(data = df,
+                 statistic = med.dif,
+                 R = 2000)
+median(boot.out$t)
+```
+
+## Wilcoxon signed-rank test
+
+This is the nonparametric equivalent to the _paired-sample t test_.  
+
+To be added...
+## Nonparametric alternatives to correlation
+
+The blog post on the assumptions for the use of parametric tests applies to correlation.  Both variables must meet this assumption.  The expectation being that one of them is categorical in nature and only if the sample space for that variable is binary.  
+
+The first alternative ranks the values before calculating the correlation and is termed *Spearman correlation* and the resultant correlation coefficient is termed *Spearman's* $\rho$.  This can be passed as an argument to the `cor.test()` command.
+
+```{r}
+cor.test(x, y, method = "spearman")
+```
+
+One problem with Spearman's $\rho$ is that it deals poorly with small sample sizes and a large number of tied ranks.  *Kendall's* $\tau$ is an alternative non parametric test for these cases.
+
+```{r}
+cor.test(x, y, method = "kendall")
+```
