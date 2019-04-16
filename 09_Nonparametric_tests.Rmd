@@ -17,13 +17,13 @@ h3 {color:#1a2451;}
 
 ## Preamble
 
-In the previosu chapter we learned that we cannot alsways use the common paranetric tests to anlayze our data.
+In the previous chapter we learned that we cannot always use the common parametric tests to analyze our data.
 
-This chapter is all about the proper alternatives.  These non-parametric tests are not dependent upon the paraneters that we saw in the assumptions for the use of parameric tests.
+This chapter is all about the proper alternatives.  These non-parametric tests are not dependent upon the parameters that we saw in the assumptions for the use of parametric tests.
 
 ## The Wilcoxon rank-sum test
 
-The Wilcoxon rank-sum test is used in place of the unpaired sample _t_ test (Student's _t_ test).  In this siutation, the collected data point values do not meet the assumptions for the use of a parametric test.  It is, very confusingly, also known as the _Mann-Whitney U test_, the _Wilcoxon-Mann-Whitney test_ and the _Mann-Whitney-Wilcoxn test_. 
+The Wilcoxon rank-sum test is used in place of the unpaired sample _t_ test (Student's _t_ test).  In this situation, the collected data point values do not meet the assumptions for the use of a parametric test.  It is, very confusingly, also known as the _Mann-Whitney U test_, the _Wilcoxon-Mann-Whitney test_ and the _Mann-Whitney-Wilcoxon test_. 
 
 Although the parametric assumptions are not required, this test does require that the data point values are ordinal in some way, i.e. that they can be ranked in order.
 
@@ -31,44 +31,13 @@ All the data point values from the two groups are placed in the same set and ran
 
 The groups are again separated and the ranks in each grouped summed.  The null hypothesis is that these sums will be even in both groups.  This means that it is equally likely that a randomly selected sample selected from one group will be less than or greater than a randomly selected sample from the other group.
 
-When there are _ties_, the ranks associated with these are avergaed.  For example, if there are three values that are similar and if they were to start at rank $14$, they are initially each given the ranks $14$, $15$, and $16$.  The ranks are summed, $14+15+16$ which is `r 14+15+16`.  This is divided by $3$ (the number of ties) and then each is given this rank of $15$.  The next value up the scale is given a rank of $17$, since the three ties took up $3$ places.
-
-The ranks for each group is totalled as $R_1$ and $R_2$.
-
-So as not to place any group in an advantaged postion, due to the fact that one of the groups may have a much larger sample size, the respective _mean rank_ is subtracted from each total.  The equation for the mean rank in cases where either one or both of the groups have a sample size of less than $8$, is given in equation (1).  This results in a _U_ statistic.  It is the smaller of the two statistics which is then used to calculate a _p_ value.
-
-$$ {\overline{r}}_{i}=\frac{n_i \left( n_i + 1 \right)}{2} \\
-U_i = R_i - {\overline{r}}_{i}  \tag{1}$$
-
-In cases where __both__ groups have at least $8$ samples, equation (2) is used.  Here $n_1$ refers to the smaller of the two samples.
-
-$$ {\mu}_{R} = \frac{n_1 \left( n_1 + n_2 + 1 \right)}{2} \\
-{\sigma}_{R} = \sqrt{\frac{n_1 n_2 \left( n_1 + n_2 + 1 \right)}{12}} \\
-z = \frac{R - \mu_R}{\sigma_R}  \tag{2}  $$
-
-Note that in some textbooks, $\mu_U$ is given.  The equations are algebraically similar and is expressed in equation (3).
-
-$$ \mu_U = \frac{n_1 n_2}{2} \\
-\sigma_U = \sqrt{\frac{n_1 n_2 \left( n_1 + n_2 + 1 \right)}{12}} \\
-z = \frac{U - \mu_U}{\sigma_U} \tag{3}  $$
-
-In the case of equation (1) the _p_ value can be calculated using the _Monte Carlo method_, where a similar study group sample is created over and over again.  This creates a sample distribution against which the original $U$ is tested.  Alternatively, _U_ statistic tables are available.
-
-It is also possible to assume a normal distribution for the test statistic (as in equation (2) and equation (3)) and calculate from there.
-
-Also note that in the case of tied ranks, $\sigma$ must be calculated as in equation (4).
-
-$$ \sigma_U = \sqrt{ \frac{n_1 n_2}{12} \left[ \left(  n + 1\right) - \sum_{i = 1}^{k} \frac{t_i^3 - t_i}{n \left( n - 1 \right)} \right]} \tag{4}  $$
-
-In this equation $n = n_1 + n_2$, $t_i$ is the number of subjects sharing rank $i$, and $k$ is the number of distinct ranks.
-
 Measurement capabilities and rounding do effect the Wilcoxon rank-sum test.  If measurements are only accurate to a certain decimal value, two data point values will be given the same rank, even though they might not be equal given a more accurate measurement (more decimal values).  Rounding of numerical values have a similar effect.
 
 To investigate this test, we will create some simulated data and save it as a data frame object.
 
 ### Creating data
 
-Below we create a data frame object with two statistical variables, `Group` and `CRP`.  The former is nominal categorical with a sample space containing two elements.  We will use this variable to construct two groups.  The latter variable is numerical and consists of $100$ values following a $\chi^2$ distribution with a degress of freedom value of $2$.
+Below we create a data frame object with two statistical variables, `Group` and `CRP`.  The former is nominal categorical with a sample space containing two elements.  We will use this variable to construct two groups.  The latter variable is numerical and consists of $100$ values following a $\chi^2$ distribution with a degrees of freedom value of $2$.
 
 ```{r Creating data and a data.frame}
 set.seed(123)  # Seeding the pseudo-random number generator for reproducible results
@@ -91,7 +60,7 @@ head(df)
 
 ### Conducting the test
 
-The `wilcox.test()` function will conduct our Mann-Whitney-U tests.  We use formula notation and seperately defined the data frame object using the `data = ` keyword argument.  Note that we could also have used the `df$CRP ~ df$Group` syntax omitting teh second argument.
+The `wilcox.test()` function will conduct our Mann-Whitney-U tests.  We use formula notation and separately defined the data frame object using the `data = ` keyword argument.  Note that we could also have used the `df$CRP ~ df$Group` syntax omitting the second argument.
 
 ```{r Wilcoxon rank sum test}
 test1 <- wilcox.test(CRP ~ Group,
@@ -104,7 +73,7 @@ Let's look at the results of our test.
 test1
 ```
 
-We note a test statistic and a _p_ value, which we can use similar to Student's _t_ test in our reports.
+We note a test statistic and a _p_ value, which we can use in a similar fashion as the Student's _t_ test in our reports.
 
 As and aside, the `wilcox.test()` function also allows the use of data stored in two separate lists.
 
@@ -124,7 +93,7 @@ wilcox.test(grpA,
 It is worthwhile to take a closer look at the arguments of this function.
 
 * `paired =`
-  * This can be set as `FALSE` (default), if the groups are independent or `TRUE` if they are dependent
+  * This can be set as `FALSE` (default), if the groups are independent, or `TRUE` if they are dependent
 * `alternative = c()`
   * Any one of `two.sided`, `less`,or `greater` depending on the alternative hypothesis
 * `mu = `
@@ -153,7 +122,7 @@ $$ r = \frac{z}{\sqrt{n}} \tag{5}  $$
 
 ### Example
 
-Let's look at an example of simulated data to see the process of choosing a non-paranetric tests in action.
+Let's look at an example of simulated data to see the process of choosing a non-parametric tests in action.
 
 Given two groups, `Treatment` and `Control`, note the two sets of data point values for the variable `LDL`
 
@@ -191,7 +160,7 @@ boxplot(LDL ~ Group,
 
 The skewness in the data is clearly visible.
 
-No for conducting the Wilcoxon rank-sum test.
+Now for conducting the Wilcoxon rank-sum test.
 
 ```{r Wilcoxon rank-sum test}
 wilcox.test(LDL ~ Group,
@@ -209,80 +178,67 @@ treatment
 contrl
 ```
 
-The `outer()` command check each value in the first list (in turn) against every value in the second list and returns a Boolean value based on the expression.  Below it checks for _less than_.
-
-```{r The outer() command to show the cases where teratment is less than contrl}
-outer(treatment, contrl, "<")
-```
-
-The `sum()` command will sum all the `TRUE` values.
-
-
-```{r Sum the TRUE values}
-sum(outer(treatment, contrl, "<"))
-```
-
-This is indeed the $W$ statistic given above.  Summing the ranks for the `Treatment` group, though, note the solution of $34$.
-
-```{r Rank of treatment group}
-sum(rank(df$LDL)[df$Group == "Treatment"])
-```
-
-To get the $W$ statistic used in the `wilcoxon.test()` command the rank of the other group is used, from which is subtracted equation (1) above.
-
-```{r}
-sum(rank(df$LDL)[df$Group == "Control"]) - ((6 * (6 + 1)) / 2)
-```
-
-Using the `conf.int =` argument gives the difference in location.
-
-```{r Difference in location}
-wilcox.test(LDL ~ Group,
-            df,
-            conf.int = TRUE)
-```
-
-The difference in location is the median of the differences between all $36$ pairs.
-
-```{r Difference between pairs}
-median(outer(treatment, contrl, "-"))
-```
-
-
-The difference in location can be calculated using bootstrapping.
-
-```{r Creating a bootstrapping function}
-library(boot)
-med.dif <- function(d, i) {
-   tmp <- d[i,] 
-   median(tmp$LDL[tmp$Group=="A"]) - median(tmp$LDL[tmp$Group=="B"])
- }
-```
-
-```{r}
-boot.out <- boot(data = df,
-                 statistic = med.dif,
-                 R = 2000)
-median(boot.out$t)
-```
 
 ## Wilcoxon signed-rank test
 
-This is the nonparametric equivalent to the _paired-sample t test_.  
+This is the non-parametric equivalent to the _paired-sample t test_.
 
-To be added...
+The same `wilcox.test()` function is used for this test, except that the keyword argument `paired =` is set to `TRUE`.
+
+## The Kruskal-Wallis test
+
+The _Kruskal-Wallis test_ is the non-parametric equivalent of analysis of variance.  here we are comparing more than two groups.
+
+Below we create data for a placebo groups and for two treatment groups, let's say a low-dose and a high-dose group.
+
+```{r Data for three groups}
+treatment_low <- c(1.8, 1.7, 6.9, 0.8, 2.1, 7.6)
+treatment_hi <- c(3, 4.2, 7, 4.5, 7.8, 3.3, 7.8)
+contrl <- c(4.1, 3.2, 6.8, 1.9, 3.0, 4.7)
+```
+
+```{r Conduction the Kruskal Wallis test}
+kruskal.test(list(treatment_low,
+                  treatment_hi,
+                  contrl))
+```
+
+We note a Kruskal-Wallis $\chi^2$ statistic, degrees of freedom, and a _p_ value.
+
 ## Nonparametric alternatives to correlation
 
-The blog post on the assumptions for the use of parametric tests applies to correlation.  Both variables must meet this assumption.  The expectation being that one of them is categorical in nature and only if the sample space for that variable is binary.  
+The assumptions for the use of parametric tests applies to correlation.  Both variables must meet these assumptions.
 
 The first alternative ranks the values before calculating the correlation and is termed *Spearman correlation* and the resultant correlation coefficient is termed *Spearman's* $\rho$.  This can be passed as an argument to the `cor.test()` command.
 
-```{r}
-cor.test(x, y, method = "spearman")
+First, we create some paired data point values for our correlation.
+
+```{r Creating variables for nonparametric correlation}
+height <- c(160, 167, 170, 168, 172, 159, 163, 155, 158, 180, 185, 181, 195)
+weight <- height + (round((rnorm(length(height), 0, 1)), 3) * 10)
 ```
 
-One problem with Spearman's $\rho$ is that it deals poorly with small sample sizes and a large number of tied ranks.  *Kendall's* $\tau$ is an alternative non parametric test for these cases.
+```{r}
+plot(height,
+     weight)
+```
+
+Now for the Spearman correlation test using the `method = ` argument for the `cor.test()` function to `"Spearman"`.
 
 ```{r}
-cor.test(x, y, method = "kendall")
+cor.test(height,
+         weight,
+         method = "spearman")
 ```
+
+The correlation coefficient in this case is $\rho$.  One problem with Spearman's $\rho$ is that it deals poorly with small sample sizes and a large number of tied ranks.  *Kendall's* $\tau$ is an alternative non parametric test for these cases.
+
+```{r}
+cor.test(height,
+         weight,
+         method = "kendall")
+```
+
+## Conclusion
+
+These are the non-parametric test alternatives for the commonly used parametric tests.  Always check that the assumptions for the use of parametric tests are met.  If not, do use these non-parametric alternatives.

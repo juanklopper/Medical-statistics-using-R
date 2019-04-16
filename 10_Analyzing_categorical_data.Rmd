@@ -1,0 +1,76 @@
+---
+title: "10 Analyzing categorical data"
+author: "Dr Juan H Klopper"
+output:
+  html_document:
+    toc: true
+    number_sections: false
+---
+
+<style type="text/css">
+h1 {color:#1a2451;}
+h2 {color:#ffbd4a;}
+h3 {color:#1a2451;}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd(getwd()) # Spreadsheet file and R markdown file in same folder
+```
+
+```{r Libraries, message=FALSE, warning=FALSE}
+library(dplyr)
+```
+
+![](KRG_elegant_logo_for_light_BG.png)
+
+## Preamble
+
+## The $\chi^2$ goodness of fit test
+
+The $chi^$ goodness of fit testexamines the proportions of the sample space data point values for a nominal categorical variable.  It is a test of proportions.  Below, we import the `ProjectDataII.csv` file and save it as a data frame object with the computer variable name `df`.
+
+```{r Data import}
+df <- read.csv("ProjectIIData.csv")
+```
+
+One of the variables in the dataset is `Improvement`.  In this simulated dataset, it refers to whether pateints improved after receiving treatment.  The samplace space is sidchotomous, with values `Yes` and `No`.  We can use the `table()` function to see a count for each of these elements.
+
+```{r Count of the sample space elements for the improvement variable}
+table(df$Improvement)
+```
+
+A total of $156$ patients did not improve, whereas $144$ did.  Before starting the data collection, we might have suspected a $0.5:0.5$ split in the data.  This refers to the _proportions_ in the $\chi^2$ test for proprotions.  Instead, we found proprtions of `r 156 / (156 + 144)`:`r 144 / (156 + 144)`.  We can test our findings against the expected propportions using the `chisq.test()` function.  The first argument is a numeric vector containing the actual counts.  The `p =` arguemt holds a numerical vector containing the expected proportions, which must sum to $1.0$.
+
+```{r Chi square goodness of fit test}
+chisq.test(c(156, 144),
+           p = c(0.5, 0.5))
+```
+
+Since we only have a sample space of two elements, we have a single degree of freedom.  For the appropriate $chi^2$ distribution, our findings represent a _p_ value of $0.49$.  For an $\alpha$ value of $0.05$, we cannot reject the null hypothesis that there is no significant difference between the observed and expected proportions.
+
+## The $chi^2$ test for independence
+
+The $chi^2$ test for independence measures, as the name implies, whether two categorical variables are independent.  In our dataset we also have a categorical variable named `Group`.  We can inspected it with the `table()` function too.
+
+```{r Sample space elements count for the Group variable}
+table(df$Group)
+```
+
+Here we no that there are $150$ patients in each group.  We can comnine this information with that of the `Improvement` variable into what is termed a _contingency_ table.  We use the same `table()` function, but list bouth variables.
+
+```{r Contingency table of Group vs Improvement}
+table(df$Group,
+      df$Improvement)
+```
+
+Now we can see that $66$ patients in group A did not improve, while $84$ did.  For patients in group C these numbers are $90$ and $60$.  We can use this contingency table of obeserved values to investigate whether the two nominal categorical variables are independent.
+
+```{r Chi square test for independence}
+chisq.test(table(df$Group,
+                 df$Improvement))
+```
+
+The degrees of freedom for this contingency table is $1$.  This is calculated as $1$ subtracted from the number of rows times $1$ subtracted from the number of columns, i.e $\left( 2 - 1 \right) \times \left( 2 - 1 \right) = 1 \times 1  = 1 $.  The $chi^2$ value is $7.0646$ representing a _p_ value of < $0.01$.  We can therefor reject our null hypothesis that the variables are not dependent and accept the alternative hypothesis that they are indeed dependent.  Which group the patient ended up in did influence their imprivement outcome.
+
+## Fisher's exact test
