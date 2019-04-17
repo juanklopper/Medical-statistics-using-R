@@ -1,0 +1,162 @@
+---
+title: "1Analyzing categorical outcomes"
+author: "Dr Juan H Klopper"
+output:
+  html_document:
+    toc: true
+    number_sections: false
+---
+
+<style type="text/css">
+h1 {color:#1a2451;}
+h2 {color:#ffbd4a;}
+h3 {color:#1a2451;}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd(getwd()) # Spreadsheet file and R markdown file in same folder
+```
+
+```{r Libraries, message=FALSE, warning=FALSE}
+library(dplyr)
+```
+
+![](KRG_elegant_logo_for_light_BG.png)
+
+## Preamble
+
+In the chapter on linear regression, we considered a dependent outcome variable, which was numerical in nature.  We then used one or more independent variables, also numerical, to create a model to predict the dependent variable.
+
+In logistic regression, the dependent variable is categorical in nature.  In most cases, we deal with a dichotomous variable, with a sample space of i.e. _yes_ or _no_.
+
+When using a single independent variable, we refer to univariate logistic regression and when using more than one independent variable, the term used is multivariate logistic regression.  To be clear, these independent variable may be numerical or categorical.  The latter requires some consideration.
+
+## Univariate logistic regression
+
+As mentioned, here we consider a single independent variable.  We will start with the simple case of a numerical independent variable.  Below, we import the `ProjectDataII.csv` spreadsheet file as a data frame object named `df`.
+
+```{r Import data}
+df <- read.csv("ProjectIIData.csv")
+```
+
+The `names()` functions shows a list of the statistical variable (column headers in row one) in the dataset.
+
+```{r List the statistical variables}
+names(df)
+```
+
+As a simulated dataset, we will consider the `Improvement` variable as our dependent variable.  It is dichotomous as we can see from the `table()` function below.  
+
+```{r Sample space element count of Improvement variable}
+table(df$Improvement)
+```
+
+One of the sample space elements has to selected as the positive outcome, i.e. the one which we are trying to predict.  The `levels()` can tell us this order.
+
+```{r Checking the levels}
+levels(df$Improvement)
+```
+
+We are interested in the last element, which is _Yes_ in this case.  Fortunately, this was correctly done by R.  If not, we can specify the levels using the `factor()` function.
+
+Now we consider the `CRP` variable as independent variable.  The `glm()` function, short for _generalized linear model_ allows us to investigate how well `CRP` predicts `Outcome`.
+
+```{r Univariate model of CRP and Outcome}
+crp_outcome <- glm(Improvement ~ CRP,  # Formula
+                   data = df,  # Data object
+                   family = "binomial")  # Binomial for dichotomous outcome
+```
+
+The `glm()` function takes a formula as imput.  Above we stated that we want the `Improvement` outcome predicted by the `CRP` value.  The `family =` argument allows us to choose a setting based on the dependent variable.  Since this case represents a dichotomous variable, we set this to `"binomial"`.
+
+The`summary()` function provides for a summary of our model.
+
+```{r Summary of the findings of our model}
+summary(crp_outcome)
+```
+
+As with linear regression, logistic regression attemps at forming a straight line.  This is not as straightforward as it may seem, as the dependent variable only has two ouctomes.  To be sure, these were changed to values of $0$ and $1$ to do the calculations, based on the levels that we set before.  The straight line is actually created by taking the logarithmic transform of the values.
+
+With this transofrmation we still have a $y$ intercept (with its estimate) and a `CRP` estimate.  This has to be transformed back by taking the exponent of this value.
+
+```{r Calculating the odds ratio}
+exp(-0.03983)
+```
+
+What we have here is the odds ratio.  Anything less thean $1.0$ lessens the odds of our independent ouctome whcih was _Yes_ for improvement.  For every one unit increase in CRP, we have a lessening of the odds of an improved ouctome.
+
+We note a _p_ value of $0.48$, which is not signifiant at an $\alpha$ value of $0.05$.  We are also interested in the $95$% confidence intreval around the odds ratio.  This is achieved using the `confint()` function.
+
+```{r}
+exp(confint(crp_outcome))
+```
+
+We can see from this why the _p_ value was not significant.  The interval shows both a value less than $1.0$ and a value of more than $1.0$.
+
+What we don't see is a coefficient of determination, $R^2$.  Instead, there are criteria to examine a model.  One of the best known is the Akaike information criterion (AIC).  We want to see this value as low as possible, as this indicates more information provided by the model.  This is information gain or loss of uncertainty.
+
+So, how does this all compare to a linear model shown in equation (1) for a single independent variable.
+
+$$ \hat{y}_i = \beta_0 + \beta_1 x_i \tag{1} $$
+
+Given one of the independent variable data point values, $x_i$, we can calculate the predicted value of the dependent variable, $\hat{y}_i$, for the same subject by the intercept, $\beta_0$ and the coefficient  / estimate / slope, $\beta_1$.  Note that $\hat{y}$ is a numerical value.
+
+Equation (2) show the shift to a probability of an outcome.  Since the dependent variable is categorical, we can only predict the probability the _positive_ outcome, which is _yes_ in this case. So, for a given sample, we predict the probability of the dependent variable for that subject being _yes_.  The cust-off is usually $0.5$.  At or above this probability, the model predicts a dependent variable data point values of _yes_, otherwise, it will predict a _no_.
+
+$$ p \left( y_i \right) = \frac{1}{1+ e^{-\left( \beta_0 + \beta_1 x_i \right)}} \tag{2} $$
+
+Here $e$ is Euler's number (although other bases such as $10$ can also be used).
+
+## Multivariate logistic regression
+
+We can attempt to improve our model by introducing more independent variables.  This is easily achieved with the formula used as first argument in the `glm()` model.
+
+```{r Multivariate logistic regression}
+crp_chol_outcome <- glm(Improvement ~ CRP + Cholesterol,
+                        data = df,
+                        family = "binomial")
+summary(crp_chol_outcome)
+```
+
+Now we see an individual estimate (which we will convert into an odds ratio) for each of the independent variables.  We also note that the AIC has increased.  This model therefor has negative information gain and is a worse model.
+
+## Adding a dichotomous nominal variable to the model
+
+From our data we also have a `Group` variable.
+
+```{r Counts of the Group variable data point values}
+table(df$Group)
+```
+
+From the `table()` function we know that it is dichotomous.  We need to assign one of the elements in this sample space as the elemnt of invetsigation.  If we imagine this simulated study to containg two groups, one being the control group and one group receving an active intervention.  These are coded as `A` and `C` in the dataset.  We are obviously interested in the active group.  To encode this as our element of choice, we must set the levels.  Currently, `C` is listed second as is the element that will be coded as $1$.  We can change this using the `factor()` function.
+
+```{r Changing the sample space element of choice}
+df$Group <- factor(df$Group,
+                   levels = c("C", "A"))  # Listed in reverse order
+table(df$Group)
+```
+
+We now see that `C` is listed second and is the value under consideration.  Let's add this to the model.
+
+```{r Adding Group to the model}
+crp_chol_group_outcome <- glm(Improvement ~ CRP + Cholesterol + Group,
+                              data = df,
+                              family = "binomial")
+summary(crp_chol_group_outcome)
+```
+
+Our model now has a lower AIC.  We also note that `Group` has a significant _p_ value to boot.  We need to look athe the odds ratio and 95% confidence interval around the odds ration for `Group`.
+
+```{r OR and 95 percent CI for Group}
+exp(0.669787)  # Exponent of the coefficient of the Group variable
+confint(crp_chol_group_outcome)
+```
+
+We see an odds ratio of $1.95$ and a $95$% condifence interval around this of $
+
+## Adding a multi-level nominal categorical variable to the model
+
+## Forward and backward stepwise methods
+
+
