@@ -1,7 +1,6 @@
 ---
 title: "A parametric comparison of means"
 author: "Dr Juan H Klopper"
-date: "February 21, 2019"
 output:
   html_document:
     toc: true
@@ -23,9 +22,13 @@ setwd(getwd())
 
 ## Preamble
 
-The time has come for us to do some real inferential statistics.  In this tutorial we will look at comparing the means for a numerical variable between two or more groups.  It is important to understand that the groups are made up of splitting your sample by the sample space of one of the categorical variable sin your dataset.  Note that this _splitting into groups_ can also be done by a numerical variable, but this variable will have to be converted to a categorical variable.  An example might be _age_.  We can groups all patients younger than $60$ years of age as belonging to a group called _young_ and everyone else belonging to a group called _not young_.  This necessitates a new variable in which the sample space will be these two new data point values.
+The time has come for us to do some real inferential statistics.  In this tutorial, we will look at comparing the means for a numerical variable between two or more groups.  It is important to understand that the groups are made up of splitting the subjects of a research project by the sample space of one of the categorical variables in the dataset.  Note that this _splitting into groups_ can also be done by a numerical variable, but this variable will have to be converted to a categorical variable.  An example might be _age_.  We can groups all patients younger than $60$ years of age as belonging to a group called _young_ and everyone else belonging to a group called _not young_.  This necessitates a new variable in which the sample space will be these two new data point values.
 
-We will stick to the more common case of using one of the categorical variables to create two or more groups.
+We will stick to the more common case of using one of the categorical variables to create two or more groups.  It is the difference in means for a numerical variable that is our interest in this chapter.
+
+The most common test to compare the means for a numerical variable between two groups is Student's _t_ test.  When comparing more than two groups, the most common test is analysis of variance (ANOVA).
+
+All the tests in this chapter are examples of parametric tests.  Parametric tests are based on assumptions made of the data.  These assumptions must be met before we can actually use these test.  Fortunately, this is so in most cases.  In the chapter on non-parametric tests, we will actually look at these assumptions and learn about specific statistical tests associated with these assumptions.  If these tests show that the assumptions do not hold, we cannot use the common parametric tests shown in this chapter.  Instead, we will use the mentioned non-parametric test.
 
 ## Student's _t_ test
 
@@ -67,7 +70,7 @@ t.test(group_I_age,  # Age values of patients in group I
        var.equal = TRUE)  # Stating that we are assuming equal variances
 ```
 
-We note a _t statistic_ of $0.557$, a degrees of freedom (DOF) values of $498$,, and a _p_ value of $0.58$ (rounded).  We also note a confidence interval around the differences in the two means and the two actual means.  In between there is a statement about an alternative hypothesis.
+We note a _t statistic_ of $0.557$, a degrees of freedom (DOF) values of $498$,, and a _p_ value of $0.58$ (rounded).  We also note a confidence interval around the differences in the two means (more on this later) and the two actual means.  In between there is a statement about an alternative hypothesis.
 
 The _p_ value is more than $0.05$ and we would state that there is not a significant different in age between patients in group I and group II.  The two mean values are also easy to interpret.
 
@@ -98,7 +101,7 @@ curve(dt(x, df = 498),
       xlab = "t statistic")
 ```
 
-The difference in means for our two set of ages was $0.585$.  This is converted to a _t_ statistic with the use of a pooled variance for the whole sample.  The _t_ distribution above is a sampling distribution of all possible _t_ statistic values (based only on the DOF value).  As an aside, if we knew the standard deviation of a variable in the whole distribution, we would not need the _t_ distribution, but would instead use the _z_ distribution (from the standard normal distribution).
+The difference in means for our two set of ages was $0.585$.  This is converted to a _t_ statistic with the use of a pooled variance for the whole sample.  The _t_ distribution above is a sampling distribution of all possible _t_ statistic values (based only on the DOF value).  As an aside, if we knew the standard deviation of a variable in the whole distribution, we would not need the _t_ distribution, but would instead use the _z_ distribution (from the normal distribution).
 
 The _t_ statistic was $0.557$.  Let's place this on our plot.
 
@@ -133,11 +136,11 @@ If we could reasonably convince our audience that one mean would be higher than 
 
 As a bit of fun, we can add two vertical lines that would represent an area of $0.05$ (that is $0.025$ on either side).  For $498$ DOF, those _t_ statistics (known as _critical values_) would be about $-1.96$ and $1.96$.
 
-```{r Indicating the crtical t values}
+```{r Indicating the critical t values}
 curve(dt(x, df = 498),
       from = -3, to = 3,
       lwd = 2,
-      main = "Critical t statistic values for a DOF valueof 498",
+      main = "Critical t statistic values for a DOF value of 498",
       ylab = "Distribution",
       xlab = "t statistic")
 abline(v = 0.557)
@@ -148,9 +151,24 @@ abline(v = 1.96,
        col = "red")
 ```
 
-It is now clear that our _t_ statistic has an area under the curve way more than the critical _t_ statistic.  This represents an $\alpha$ value of $0.05$.
+It is now clear that our _t_ statistic has an area under the curve way more than the critical _t_ statistic (shown in red).  This represents an $\alpha$ value of $0.05$.
 
-## The condifence interval
+We can use the `pt()` function to calculate the area under the curve for the areas to the left of the left-hand side black line and to the right of the right-hand side red lines (representing _t_ statistics of $-0.557$ and $0.557$).
+
+```{r Two tailed hypothesis p value of our t statistic}
+pt(-0.557,  # Use the left-hand side t statistic as the area is calculate from negative infinity
+   498) * 2  # Multiply by 2 for two-tailed hypothesis
+```
+
+A _t_ statistic of $-1.96$ ($1.96$) represents and are under the curve of about $0.025$ (each).  These are the red lines in the plot above.
+
+```{r t statistic for an alpha value of 0.025}
+pt(-1.96,
+   498) * 2
+```
+
+
+## The confidence interval
 
 A confidence interval in this setting refers to the difference in means.  Remember that we have taken samples from population.  Five-hundred of them.  Through hypothesis testing, we actually want to know if these are two different populations (Groups I and II might have been chosen such that we suspect some differences, i.e. receiving a different treatment).
 
@@ -160,11 +178,17 @@ To do this we set a confidence level, typically $95$%.  This will given us a sym
 
 To calculate the confidence interval for the difference in means, we construct a _t_distribution around a mean difference of our current mean difference (for a given DOF value) and find the values which will represent $2.5$% of the curve on either side of the middle.
 
+The `t.test()` function does this for us.  In our example, comparing the ages of patients in groups I and II, the `t.test()` function results shows lower and upper bounds for the $95$% confidence interval as $-1.48$ and $2.65$ (rounded).  The mean of these two values is $0.58$.  The is also the actual difference in means between the two groups,as it should be.  The confidence intervals fall symmetrically around the mean difference.
+
+If we write a report or a paper, we could state that:  *"The difference in average ages between patients in groups I and II was $0.58$ (95% CI $-1.48$ to $2.65$, p value 0.57).*
+
+We would interpret this as a non-statistically significant difference and also have some difference range that we could infer on our population.  We note, though, that we cannot be sure that this particular study is on of the $95$% of studies we could do (all with different confidence intervals) that contain the actual difference between the two populations.
+
 ## Comparing the means of two groups with unequal variances
 
 Student's _t_ test as was used above assumes that there is a near equal variance for the numerical variable in the two groups.  Let's take a look at the variances in age.
 
-```{r Variance in age fro our two groups}
+```{r Variance in age for our two groups}
 df %>% group_by(Group) %>% 
   summarise(VAR = var(Age))
 ```
@@ -237,7 +261,7 @@ df %>% group_by(Survey) %>%
 ```{r Box plot of ages for each answer group}
 boxplot(df$Age ~ df$Survey,
         main = "Age distribution for age answer to the survey question",
-        xlab = "Survey quation answer",
+        xlab = "Survey question answer",
         ylab = "Age")
 ```
 

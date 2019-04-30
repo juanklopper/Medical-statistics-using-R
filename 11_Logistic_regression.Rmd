@@ -1,5 +1,5 @@
 ---
-title: "1Analyzing categorical outcomes"
+title: "Analyzing categorical outcomes"
 author: "Dr Juan H Klopper"
 output:
   html_document:
@@ -28,13 +28,13 @@ library(dplyr)
 
 In the chapter on linear regression, we considered a dependent outcome variable, which was numerical in nature.  We then used one or more independent variables, also numerical, to create a model to predict the dependent variable.
 
-In logistic regression, the dependent variable is categorical in nature.  In most cases, we deal with a dichotomous variable, with a sample space of i.e. _yes_ or _no_.
+In logistic regression, the dependent variable is categorical in nature.  In most cases, we deal with a dichotomous variable, with a sample space of i.e. _Yes_ or _No_.
 
-When using a single independent variable, we refer to univariate logistic regression and when using more than one independent variable, the term used is multivariate logistic regression.  To be clear, these independent variable may be numerical or categorical.  The latter requires some consideration.
+When using a single independent variable, we refer to _simple logistic regression_ and when using more than one independent variable, the term used is _multivariable logistic regression_.  To be clear, these independent variable may be numerical or categorical.  The latter requires some consideration.  When there are more than one dependent variable, as seen in repeated-measures models, we use the term _multivariate logistic regression_. [Hidalgo B, Goodman M.  Multivariate or multivariable regression?  Am J Public Health.  2013;103(1):39-40).]
 
-## Univariate logistic regression
+## Simple logistic regression
 
-As mentioned, here we consider a single independent variable.  We will start with the simple case of a numerical independent variable.  Below, we import the `ProjectDataII.csv` spreadsheet file as a data frame object named `df`.
+As mentioned, here we consider a single independent variable.  We will start with the simplest case of a _numerical_ independent variable.  Below, we import the `ProjectDataII.csv` spreadsheet file as a data frame object named `df`.
 
 ```{r Import data}
 df <- read.csv("ProjectIIData.csv")
@@ -52,7 +52,7 @@ As a simulated dataset, we will consider the `Improvement` variable as our depen
 table(df$Improvement)
 ```
 
-One of the sample space elements has to selected as the positive outcome, i.e. the one which we are trying to predict.  The `levels()` can tell us this order.
+One of the sample space elements has to selected as the positive outcome, i.e. the one which we are trying to predict.  The `levels()` function can tell us this order.
 
 ```{r Checking the levels}
 levels(df$Improvement)
@@ -68,7 +68,7 @@ crp_outcome <- glm(Improvement ~ CRP,  # Formula
                    family = "binomial")  # Binomial for dichotomous outcome
 ```
 
-The `glm()` function takes a formula as imput.  Above we stated that we want the `Improvement` outcome predicted by the `CRP` value.  The `family =` argument allows us to choose a setting based on the dependent variable.  Since this case represents a dichotomous variable, we set this to `"binomial"`.
+The `glm()` function takes a formula as input.  Above we state that we want the `Improvement` outcome predicted by the `CRP` value.  The `family =` argument allows us to choose a setting based on the dependent variable.  Since this case represents a dichotomous variable, we set this to `"binomial"`.
 
 The`summary()` function provides for a summary of our model.
 
@@ -76,19 +76,19 @@ The`summary()` function provides for a summary of our model.
 summary(crp_outcome)
 ```
 
-As with linear regression, logistic regression attemps at forming a straight line.  This is not as straightforward as it may seem, as the dependent variable only has two ouctomes.  To be sure, these were changed to values of $0$ and $1$ to do the calculations, based on the levels that we set before.  The straight line is actually created by taking the logarithmic transform of the values.
+As with linear regression, logistic regression attempts at forming a straight line.  This is not as _straightforward_ as it may seem, as the dependent variable only has two outcomes.  To be sure, these were changed to values of $0$ and $1$ to do the calculations, based on the levels that we set before.  The straight line is actually created by taking the logarithmic transform of the values.
 
-With this transofrmation we still have a $y$ intercept (with its estimate) and a `CRP` estimate.  This has to be transformed back by taking the exponent of this value.
+With this transformation we still have a $y$ intercept (with its estimate) and a `CRP` estimate.  This has to be transformed back by taking the exponent of this value.
 
 ```{r Calculating the odds ratio}
 exp(-0.03983)
 ```
 
-What we have here is the odds ratio.  Anything less thean $1.0$ lessens the odds of our independent ouctome whcih was _Yes_ for improvement.  For every one unit increase in CRP, we have a lessening of the odds of an improved ouctome.
+What we have here is the odds ratio.  Anything less than $1.0$ lessens the odds of our independent outcome, which was _Yes_ for improvement.  For every one unit increase in CRP, we have a lessening of the odds of an improved outcome.
 
-We note a _p_ value of $0.48$, which is not signifiant at an $\alpha$ value of $0.05$.  We are also interested in the $95$% confidence intreval around the odds ratio.  This is achieved using the `confint()` function.
+We note a _p_ value of $0.48$, which is not significant at an $\alpha$ value of $0.05$.  We are also interested in the $95$% confidence interval around the odds ratio.  This is achieved using the `confint()` function.  We add the `exp()` function to transform the results to odds ratios.
 
-```{r}
+```{r Confidence interval of the odds ratio}
 exp(confint(crp_outcome))
 ```
 
@@ -96,21 +96,15 @@ We can see from this why the _p_ value was not significant.  The interval shows 
 
 What we don't see is a coefficient of determination, $R^2$.  Instead, there are criteria to examine a model.  One of the best known is the Akaike information criterion (AIC).  We want to see this value as low as possible, as this indicates more information provided by the model.  This is information gain or loss of uncertainty.
 
-So, how does this all compare to a linear model shown in equation (1) for a single independent variable.
+So, how does this all compare to a linear model for a single independent variable?
 
-$$ \hat{y}_i = \beta_0 + \beta_1 x_i \tag{1} $$
+Given one of the independent variable data point values, we can calculate the predicted value of the dependent variable, for the same subject.  The predicted value is numerical in nature.
 
-Given one of the independent variable data point values, $x_i$, we can calculate the predicted value of the dependent variable, $\hat{y}_i$, for the same subject by the intercept, $\beta_0$ and the coefficient  / estimate / slope, $\beta_1$.  Note that $\hat{y}$ is a numerical value.
+In logistic regression, we shift to a probability of an outcome.  Since the dependent variable is categorical, we can only predict the probability of the _positive_ outcome, which is _Yes_ in this case. So, for a given sample, we predict the probability of the dependent variable for that subject being _Yes_.  The cut-off is usually $0.5$.  At or above this probability, the model predicts a dependent variable data point values of _Yes_, otherwise, it will predict a _No_.
 
-Equation (2) show the shift to a probability of an outcome.  Since the dependent variable is categorical, we can only predict the probability the _positive_ outcome, which is _yes_ in this case. So, for a given sample, we predict the probability of the dependent variable for that subject being _yes_.  The cust-off is usually $0.5$.  At or above this probability, the model predicts a dependent variable data point values of _yes_, otherwise, it will predict a _no_.
+## Multivariable logistic regression
 
-$$ p \left( y_i \right) = \frac{1}{1+ e^{-\left( \beta_0 + \beta_1 x_i \right)}} \tag{2} $$
-
-Here $e$ is Euler's number (although other bases such as $10$ can also be used).
-
-## Multivariate logistic regression
-
-We can attempt to improve our model by introducing more independent variables.  This is easily achieved with the formula used as first argument in the `glm()` model.
+We can attempt to improve our model by introducing more independent variables.  This is easily achieved with the formula used as first argument in the `glm()` model.  We _add_ additional independent variables by using `+` notation.
 
 ```{r Multivariate logistic regression}
 crp_chol_outcome <- glm(Improvement ~ CRP + Cholesterol,
@@ -129,7 +123,7 @@ From our data we also have a `Group` variable.
 table(df$Group)
 ```
 
-From the `table()` function we know that it is dichotomous.  We need to assign one of the elements in this sample space as the elemnt of invetsigation.  If we imagine this simulated study to containg two groups, one being the control group and one group receving an active intervention.  These are coded as `A` and `C` in the dataset.  We are obviously interested in the active group.  To encode this as our element of choice, we must set the levels.  Currently, `C` is listed second as is the element that will be coded as $1$.  We can change this using the `factor()` function.
+From the `table()` function we know that it is dichotomous.  We need to assign one of the elements in this sample space as the element of investigation.  If we imagine this simulated study to contain two groups, one being the control group and one group receiving an active intervention.  These are coded as `A` and `C` in the dataset.  We are obviously interested in the active group.  To encode this as our element of choice, we must set the levels.  Currently, `C` is listed second and is the element that will be coded as $1$.  We can change this using the `factor()` function.
 
 ```{r Changing the sample space element of choice}
 df$Group <- factor(df$Group,
@@ -137,7 +131,7 @@ df$Group <- factor(df$Group,
 table(df$Group)
 ```
 
-We now see that `C` is listed second and is the value under consideration.  Let's add this to the model.
+We now see that `A` is listed second and is the value under consideration.  Let's add this to the model.
 
 ```{r Adding Group to the model}
 crp_chol_group_outcome <- glm(Improvement ~ CRP + Cholesterol + Group,
@@ -146,17 +140,104 @@ crp_chol_group_outcome <- glm(Improvement ~ CRP + Cholesterol + Group,
 summary(crp_chol_group_outcome)
 ```
 
-Our model now has a lower AIC.  We also note that `Group` has a significant _p_ value to boot.  We need to look athe the odds ratio and 95% confidence interval around the odds ration for `Group`.
+Our model now has a lower AIC.  We also note that `Group` has a significant _p_ value to boot.  We need to look at the the odds ratio and 95% confidence interval around the odds ration for `Group`.
 
 ```{r OR and 95 percent CI for Group}
 exp(0.669787)  # Exponent of the coefficient of the Group variable
-confint(crp_chol_group_outcome)
+exp(confint(crp_chol_group_outcome))
 ```
 
-We see an odds ratio of $1.95$ and a $95$% condifence interval around this of $
+We see an odds ratio of $1.95$ and a $95$% confidence interval around this of $1.23 - 3.11$ for the the `Group` variable.  Both the lower and upper confidence interval values are higher than one, indicating a worse outcome (_Yes_) for those in group A.
 
 ## Adding a multi-level nominal categorical variable to the model
 
+Now that we know how to interpret the summary of a model that includes a binary categorical variable, we have to consider a model with an independent variable with more than two elements in its sample space.
+
+In the code below, we use the `mutate()` function from the `dplyr` package just as a review.  We can add new columns with it.  Below then, we add a variable called `Stage` and select $300$ random data point values from it.  It has a sample space of four elements.
+
+```{r Creating a new variable called Stage}
+set.seed(1)  # For reproducible results
+df <- df %>% mutate(Stage = sample(c("I", "II", "III", "IV"),
+                                   size = 300,
+                                   replace = TRUE))
+names(df)  # List the variables
+```
+
+We can take a look art the frequency count of our new variable using the `table()` function.
+
+```{r Frequency count of the new Stage variable}
+table(df$Stage)
+```
+
+When we think of our research question, we have to select one of the elements in the sample space of this new variable as the _baseline_ variable.  We want to examine the odds ratios for the other sample space elements against this element.  To make absolutely sure that R see this new variable as a factor, we use the `levels =` argument in the factor()` function.  We state the sample space elements in the order required.
+
+```{r Specifying the levels for the new variable Stage}
+df$Stage <- factor(df$Stage,
+                   levels = c("I", "II", "III", "IV"))
+```
+
+Using the `levels()` function, we can confirm our chosen order.
+
+```{r Confirming the new levels}
+levels(df$Stage)
+```
+
+Now for the model.  We simple add the `Stage` variable to the formula.
+
+```{r Creating a new model including Stage}
+crp_chol_group_stage_outcome <- glm(Improvement ~ CRP + Cholesterol + Group + Stage,
+                                    data = df,
+                                    family = "binomial")
+summary(crp_chol_group_stage_outcome)
+```
+
+First off, note that our AIC has increased, making this a worse model than our prior attempt.  Note also the `StageII`, `StageIII`, and `StageIV` values.  Since we set the first `level` value as `I`, we are indeed asking what the odds ratio are for the other stage against stage `I`.
+
 ## Forward and backward stepwise methods
 
+The question that arises is which variable to include in a model.  There are two popular methods for going about this, called the _backward_ and the _forward_ stepwise methods.  Note that there are mixed methods as well.
 
+Below, we consider the forward stepwise method.  Here, we start with an _empty_ model, consisting only of the intercept.
+
+```{r}
+simple_model <- glm(Improvement ~ 1,
+                    data = df,
+                    family = "binomial")
+summary(simple_model)
+```
+
+We have none of our independent variable in the model simple.  We note an AIC of $417.41$.  The aim is to improve on the  model.  The `glm()` function in R will attempt to achieve this by adding our variable (as listed in the `scope =` argument) one-by-one.  Note that we use here the model that contained all of the variables of interest and extract the formula from that model.
+
+The `step()` function will keep those variables that decrease the AIC and omit those that do not.  The first argument is our simplest model.  We then state the `direction =` as `forward`.  Finally, the formula of the _full_ model.
+
+```{r Forward step logistic regression}
+step(simple_model,
+     direction = "forward",
+     scope = formula(crp_chol_group_stage_outcome))
+```
+
+The result of the _best model_ is given.  We see that contains the variable `Group` and `Cholesterol`, with an AIC of $411.5$.  We can use these variables in our final model.
+
+```{r Our best model}
+best_model_forward <- glm(Improvement ~ Group + Cholesterol,
+                          data = df,
+                          family = "binomial")
+summary(best_model_forward)
+```
+
+From this we can extract the odds ratios and the $95$% confidence intervals as before.
+
+With the backward stepwise method, we start with our full method.  R will remove one-by-one and only keep the ones that decrease the AIC.
+
+```{r}
+step(crp_chol_group_stage_outcome,
+     direction = "backward")
+```
+
+We end up in this case with the same variables for a best model.
+
+## Conclusion
+
+Logistic regression is a powerful modeling tool for predicting a categorical outcome.  It forms the basis of many scoring systems.
+
+Care must be taken in its interpretation, though.  While we can create good models, they do not always infer successfully to other population.

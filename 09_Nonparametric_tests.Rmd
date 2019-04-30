@@ -1,5 +1,5 @@
 ---
-title: "Nonparametric tests"
+title: "Non-parametric tests"
 author: "Dr Juan H Klopper"
 output:
   html_document:
@@ -25,7 +25,7 @@ This chapter is all about the proper alternatives.  These non-parametric tests a
 
 The Wilcoxon rank-sum test is used in place of the unpaired sample _t_ test (Student's _t_ test).  In this situation, the collected data point values do not meet the assumptions for the use of a parametric test.  It is, very confusingly, also known as the _Mann-Whitney U test_, the _Wilcoxon-Mann-Whitney test_ and the _Mann-Whitney-Wilcoxon test_. 
 
-Although the parametric assumptions are not required, this test does require that the data point values are ordinal in some way, i.e. that they can be ranked in order.
+Although the parametric assumptions are not required, this test does require that the data point values are ordinal in some way, i.e. that they can be ranked in order.  It makes this test ideal for the use of ordinal categorical data point values expressed as numbers too.
 
 All the data point values from the two groups are placed in the same set and ranked in ascending order.  The lowest value is assigned a rank of $1$ and so on, until the largest value, given the last (and highest) rank.
 
@@ -46,7 +46,7 @@ group <- sample(c("A", "B"),
                 replace = TRUE)
 
 df <- data.frame(Group = group,
-                 CRP = round(rchisq(100,
+                 CRP = round(rchisq(100,  # Non-normal distribution
                                     2),
                              digits = 1))
 ```
@@ -60,7 +60,7 @@ head(df)
 
 ### Conducting the test
 
-The `wilcox.test()` function will conduct our Mann-Whitney-U tests.  We use formula notation and separately defined the data frame object using the `data = ` keyword argument.  Note that we could also have used the `df$CRP ~ df$Group` syntax omitting the second argument.
+The `wilcox.test()` function will conduct our Mann-Whitney-U tests.  We use formula notation and separately define the data frame object using the `data = ` keyword argument.  Note that we could also have used the `df$CRP ~ df$Group` syntax, omitting the second argument.
 
 ```{r Wilcoxon rank sum test}
 test1 <- wilcox.test(CRP ~ Group,
@@ -116,7 +116,7 @@ It is worthwhile to take a closer look at the arguments of this function.
   
 ### Effect size of the Wilcoxon sum-rank test
 
-Effect size is used more commonly today.  For the Mann-Whitney-U test, this can be calculated approximately, reverting the _p_ value to a _z_ score using the `qnorm()` command.  The _z_ score is then expressed as an _r_ value using equation (5).
+Effect sizes are used more commonly today.  For the Mann-Whitney-U test, this can be calculated approximately, reverting the _p_ value to a _z_ score using the `qnorm()` command.  The _z_ score is then expressed as an _r_ value using equation (5).
 
 $$ r = \frac{z}{\sqrt{n}} \tag{5}  $$
 
@@ -158,7 +158,7 @@ boxplot(LDL ~ Group,
         ylab = "LDL")
 ```
 
-The skewness in the data is clearly visible.
+The skewness in the data (especially for the treatment group) is clearly visible.
 
 Now for conducting the Wilcoxon rank-sum test.
 
@@ -187,15 +187,17 @@ The same `wilcox.test()` function is used for this test, except that the keyword
 
 ## The Kruskal-Wallis test
 
-The _Kruskal-Wallis test_ is the non-parametric equivalent of analysis of variance.  here we are comparing more than two groups.
+The _Kruskal-Wallis test_ is the non-parametric equivalent of analysis of variance.  Here we are comparing more than two groups.
 
-Below we create data for a placebo groups and for two treatment groups, let's say a low-dose and a high-dose group.
+Below we create data for a placebo group and for two treatment groups, let's say a low-dose and a high-dose group.
 
 ```{r Data for three groups}
 treatment_low <- c(1.8, 1.7, 6.9, 0.8, 2.1, 7.6)
 treatment_hi <- c(3, 4.2, 7, 4.5, 7.8, 3.3, 7.8)
 contrl <- c(4.1, 3.2, 6.8, 1.9, 3.0, 4.7)
 ```
+
+The `kruskal.test()` function takes a `list()` function as argument.  The three vectors of data point values are specified.
 
 ```{r Conduction the Kruskal Wallis test}
 kruskal.test(list(treatment_low,
@@ -205,7 +207,7 @@ kruskal.test(list(treatment_low,
 
 We note a Kruskal-Wallis $\chi^2$ statistic, degrees of freedom, and a _p_ value.
 
-## Nonparametric alternatives to correlation
+## Non-parametric alternatives to correlation
 
 The assumptions for the use of parametric tests applies to correlation.  Both variables must meet these assumptions.
 
@@ -218,20 +220,26 @@ height <- c(160, 167, 170, 168, 172, 159, 163, 155, 158, 180, 185, 181, 195)
 weight <- height + (round((rnorm(length(height), 0, 1)), 3) * 10)
 ```
 
-```{r}
+A scatter plot shows the pairs of values.
+
+```{r Scatter plot}
 plot(height,
-     weight)
+     weight,
+     main = "Correlation between height and weight",
+     xlab = "Height",
+     ylab = "Weight",
+     las = 1)
 ```
 
-Now for the Spearman correlation test using the `method = ` argument for the `cor.test()` function to `"Spearman"`.
+Now for the Spearman correlation test, setting the `method = ` argument for the `cor.test()` function to `"Spearman"`.
 
-```{r}
+```{r Spearman correlation test}
 cor.test(height,
          weight,
          method = "spearman")
 ```
 
-The correlation coefficient in this case is $\rho$.  One problem with Spearman's $\rho$ is that it deals poorly with small sample sizes and a large number of tied ranks.  *Kendall's* $\tau$ is an alternative non parametric test for these cases.
+The correlation coefficient in this case is $\rho$.  One problem with Spearman's $\rho$ is that it deals poorly with small sample sizes and a large number of tied ranks.  *Kendall's* $\tau$ is an alternative non-parametric test for these cases.
 
 ```{r}
 cor.test(height,

@@ -394,6 +394,7 @@ $(document).ready(function () {
 <li><a href="#quantiles">Quantiles</a></li>
 <li><a href="#interquartile-range">Interquartile range</a></li>
 </ul></li>
+<li><a href="#conclusion">Conclusion</a></li>
 </ul>
 </div>
 
@@ -408,17 +409,20 @@ library(dplyr)</code></pre>
 <pre class="r"><code>setwd(getwd())</code></pre>
 <div id="preamble" class="section level2">
 <h2>Preamble</h2>
-<p>By now you have a firm grasp of the use of R and can import and manipulate data. Our job now, is to start to understand our data. Data carries hidden knowledge within its many rows and columns. As human being, we are incapable of seeing that information by just staring at the value in a spreadsheet. Instead, we summaries the data, calculating single values that are representative of the data.</p>
-<p>Summary statistics, also known as descriptive statistics is the first step in the analysis of data. It starts the process of unraveling the information in the data. It also provides us with a good insight into the data and is a guide as to what we can expect from the statistical tests that we will ultimately conduct.</p>
-<p>In this tutorial we will look at <em>measures of central tendency</em> and <em>measures of dispersion</em>. The former calculates a single value that stands as representative of all the data point values for a variable. These include the well known <em>mean</em>, <em>median</em>, and <em>mode</em>, with which most of us are familiar. The latter includes <em>variance</em>, <em>standard deviation</em>, <em>range</em>, and <em>quantiles</em>.</p>
-<p>All of these tests are very simple to perform. We will continue on our journey of discovering the verbs (functions) of the <code>dplyr</code> library. They make analysis of an imported spreadsheet file a breeze.</p>
+<p>By now you have a firm grasp of the use of R and can import and manipulate data. Our job now, is to start to understand our data. Data carries hidden knowledge within its many rows and columns. As human beings, we are incapable of seeing that information by just staring at the value in a spreadsheet. Instead, we summaries the data, calculating single values that are representative of the data. In the case of sample data, these summary values are called <em>statistics</em>.</p>
+<p><em>Summary statistics</em>, also known as <em>descriptive statistics</em>, is the first step in the analysis of data. It starts the process of unraveling the information in the data. It also provides us with a good insight into the data and is a guide as to what we can expect from the statistical tests that we will ultimately conduct.</p>
+<p>In this chapter, we will look at <em>measures of central tendency</em> and <em>measures of dispersion</em>. The former calculates a single value that stands as representative of all the data point values for a variable. These include the well known <em>mean</em>, <em>median</em>, and <em>mode</em>, with which most of us are familiar. The latter includes <em>variance</em>, <em>standard deviation</em>, <em>range</em>, and <em>quantiles</em>. They give us an idea of the spread of the data point values.</p>
+<p>All of these statistics are very simple to calculate in R. To do so, we will continue on our journey of discovering the verbs (functions) of the <code>dplyr</code> library. They make analysis of an imported spreadsheet file a breeze.</p>
 </div>
 <div id="measures-of-central-tendency" class="section level2">
 <h2>Measures of central tendency</h2>
 <div id="mean" class="section level3">
 <h3>Mean</h3>
-<p>The <em>mean</em> or the <em>average</em> is the sum total of all the data point values of a numerical variable divided by the total number of data point values. The values <span class="math inline">\(10,11,12\)</span> sum to <span class="math inline">\(33\)</span> and since there are three values we have a mean of $11. The <code>mean()</code> function is used to calculate the mean.</p>
-<pre class="r"><code>mean(c(10, 11, 12))</code></pre>
+<p>The <em>mean</em> or the <em>average</em> is the sum total of all the data point values of a numerical variable divided by the total number of data point values. For <span class="math inline">\(n\)</span> data point value, each of which designated as <span class="math inline">\(x_i\)</span>,we note the equation for the mean in (1) below.</p>
+<p><span class="math display">\[ \bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i\tag{1}\]</span></p>
+<p>These equation are not important, but a small number are included throughout this textbook, only for those interested in them.</p>
+<p>The values <span class="math inline">\(10,11\)</span>, and <span class="math inline">\(12\)</span> sum to <span class="math inline">\(33\)</span> and since there are three values we have a mean of $11. The <code>mean()</code> function is used to calculate the mean.</p>
+<pre class="r"><code>mean(c(10, 11, 12))  # Place the values in the c() function</code></pre>
 <pre><code>## [1] 11</code></pre>
 <p>We are interested in using spreadsheet data, though, so let’s import the dataset that we used before. Make sure that you have imported the <code>readr</code> and <code>dplyr</code> libraries and that you have set the working directory after saving this R markdown file and the spreadsheet file in the same directory (folder).</p>
 <pre class="r"><code>df &lt;- read_csv(&quot;ProjectData.csv&quot;)</code></pre>
@@ -433,8 +437,8 @@ library(dplyr)</code></pre>
 <pre class="r"><code>round(mean(df$Age),
       digits = 0)</code></pre>
 <pre><code>## [1] 58</code></pre>
-<p>While this is interesting information, we probably want to divide the patients up into groups based on the sample space of one of the other variables. This is easily achieved when the variable is categorical. Even a numerical variable can be used to divide the patients into groups, though. This is achieved by selecting cut-off values. As an example, we could arbitrarily decide that all patients younger than <span class="math inline">\(60\)</span> are <em>young</em> patients and all those that are <span class="math inline">\(60+\)</span> are <em>old</em> patients. For this example, we will choose the <code>Group</code> variable. From the previous tutorial, we remember that the sample space included two values: <code>I</code> and <code>II</code>.</p>
-<p>While we could create two computer variables to hold vector objects, we can be more creative and use the <code>group_by</code> <code>dplyr</code> verb. We can combine in with the <code>summarise()</code> verb. An example might be the easiest way of explaining.</p>
+<p>While this is interesting information, we probably want to divide the patients up into groups based on the sample space of one of the other variables. This is easily achieved when the variable is categorical. Even a numerical variable can be used to divide the patients into groups, though, as we saw in the previous chapter. This is achieved by selecting cut-off values. As an example, we could arbitrarily decide that all patients younger than <span class="math inline">\(60\)</span> are <em>young</em> patients and all those that are <span class="math inline">\(60+\)</span> are <em>old</em> patients. For this example, we will choose the <code>Group</code> variable. From the previous tutorial, we remember that the sample space included two values: <code>I</code> and <code>II</code>.</p>
+<p>While we could create two computer variables to hold vector objects, we can be more creative and use the <code>group_by</code> <code>dplyr</code> verb. We can combine it with the <code>summarise()</code> verb. An example might be the easiest way of explaining their use.</p>
 <pre class="r"><code>df %&gt;% 
   group_by(Group) %&gt;% 
   summarise(average_age = mean(Age))</code></pre>
@@ -443,8 +447,8 @@ library(dplyr)</code></pre>
 ##   &lt;chr&gt;       &lt;dbl&gt;
 ## 1 I            58.7
 ## 2 II           58.1</code></pre>
-<p>The code chunk above reads almost like an English sentence. We start with the data tibble, <code>df</code>. We then pipe it to the <code>group_by</code> verb, which does what is says! We group the data by the chosen variable (in this case the <code>Group</code> variable). We then pipe this grouping to the <code>summarise()</code> verb. The argument in the <code>sumamrise()</code> verb is new. First, we create a name that carries some meaning. Here, i used the name <code>average_age</code>. If I gave this code to someone else, or if I read it months later, I will know what I meant to do. On the right-hand side of the equal sign comes the summary statistic that I want, the mean of the <code>Age</code> variable. From the result you will see that the mean age of each of the two groups were calculated.</p>
-<p>In the code chunk below, we the same for the <code>Survey</code> column.</p>
+<p>The code chunk above reads almost like an English sentence. We start with the tibble, <code>df</code>. We then pipe it to the <code>group_by</code> verb, which does what is says! We group the data by the chosen variable (in this case the <code>Group</code> variable). We then pipe this grouping to the <code>summarise()</code> verb. The argument in the <code>sumamrise()</code> verb is new. First, we create a name that carries some meaning. Here, we used the name <code>average_age</code>. If we gave this code to someone else, or if we read it months later, we will know what it was meant to do. On the right-hand side of the equal sign comes the summary statistic that we want, the mean of the <code>Age</code> variable. From the result you will see that the mean age of each of the two groups were calculated.</p>
+<p>In the code chunk below, we do the same for the <code>Survey</code> column.</p>
 <pre class="r"><code>df %&gt;% 
   group_by(Survey) %&gt;% 
   summarise(average_age = mean(Age))</code></pre>
@@ -461,8 +465,8 @@ library(dplyr)</code></pre>
 <div id="median" class="section level3">
 <h3>Median</h3>
 <p>To calculate the median, we place all the numerical data point values for a variable in ascending or descending order. We then simply divide them into two equal sets. If there are an odd number of values, we take the middle value to be the median. If there is an equal number of values, we take the average of the two middle values.</p>
-<p>As an example, the median of <span class="math inline">\(11,12,16,19\)</span> and <span class="math inline">\(25\)</span> is <span class="math inline">\(16\)</span> since there are two values less than and two values greater than <span class="math inline">\(16\)</span>. If the values were <span class="math inline">\(10,12,12,14,15,17,19\)</span> and <span class="math inline">\(20\)</span>, we note that <span class="math inline">\(14\)</span> and <span class="math inline">\(15\)</span> are the middle two values, with three values on either side of them. This makes the median <span class="math inline">\(14.5\)</span>.</p>
-<p>Let’s calculate both the mean and the median ages of the two group. We will once again create an appropriate name of our median calculation.</p>
+<p>As an example, the median of <span class="math inline">\(11,12,16,19\)</span> and <span class="math inline">\(125\)</span> is <span class="math inline">\(16\)</span> since there are two values less than and two values greater than <span class="math inline">\(16\)</span>. If the values were <span class="math inline">\(10,12,12,14,15,17,19\)</span> and <span class="math inline">\(125\)</span>, we note that <span class="math inline">\(14\)</span> and <span class="math inline">\(15\)</span> are the middle two values, with three values on either side of them. This makes the median <span class="math inline">\(14.5\)</span>. Calculate the mean and the median of these two sets of values and see the big difference between the two statistics for each case.</p>
+<p>Let’s calculate both the mean and the median ages of the two groups created from the <code>Group</code> column. We will once again create an appropriate name for our median calculation.</p>
 <pre class="r"><code>df %&gt;% 
   group_by(Group) %&gt;% 
   summarise(mean_age = mean(Age),
@@ -472,22 +476,17 @@ library(dplyr)</code></pre>
 ##   &lt;chr&gt;    &lt;dbl&gt;      &lt;dbl&gt;
 ## 1 I         58.7         57
 ## 2 II        58.1         56</code></pre>
-<p>The median is great for values that are not symmetric around the mean. For instance, the mean of <span class="math inline">\(12,14,16,15,12,13,14,13\)</span> and <span class="math inline">\(100\)</span>, would be a misrepresentation of the values. The <span class="math inline">\(100\)</span> will bring the mean up to a value to is no longer representative of all of the data point values.</p>
+<p>The median is great for values that are not symmetric around the mean. For instance, the mean of <span class="math inline">\(12,14,16,15,12,13,14,13\)</span> and <span class="math inline">\(100\)</span>, would be a misrepresentation of the values. The <span class="math inline">\(100\)</span> will bring the mean up to a value that is no longer a fair representative of all of the data point values.</p>
 </div>
 <div id="mode" class="section level3">
 <h3>Mode</h3>
-<p>The mode is very useful for categorical variables. It simply returns the data point value that occurs most frequently. If there are two values that are equal as the most frequent, both are listed and the variable is said to be <em>bimodal</em>, we also get <em>trimodal</em>, and if even more, <em>multimodal</em>.</p>
-<p>To count the number of unique data point values we use the <code>aggregate()</code> function. It is a bit cumbersome until you use it a couple of times.</p>
-<pre class="r"><code>aggregate(data.frame(count = df$Survey),
-          list(value = df$Survey),
-          length)</code></pre>
-<pre><code>##   value count
-## 1     1   113
-## 2     2    89
-## 3     3   109
-## 4     4    99
-## 5     5    90</code></pre>
-<p>Simply follow the recipe every tine you want to count the number of unique data point values. From the result we see that the model was <code>1</code>, i.e. the value that was selected most in the survey question.</p>
+<p>The mode is very useful for categorical variables. It simply returns the data point value that occurs most frequently. If there are two values that are equal as the most frequent, both are listed and the variable is said to be <em>bi-modal</em>, we also get <em>tri-modal</em>, and if even more, <em>multi-modal</em>.</p>
+<p>To count the number of unique data point values we use the <code>table()</code> function.</p>
+<pre class="r"><code>table(df$Survey)</code></pre>
+<pre><code>## 
+##   1   2   3   4   5 
+## 113  89 109  99  90</code></pre>
+<p>From the result we see that the model was <code>1</code>, i.e. the value that was selected most in the survey question.</p>
 <p>Another way we can go about it is the now familiar <code>group_by()</code> and <code>summarise()</code> function. We use the <code>n()</code> function, without an argument, to do the counting.</p>
 <pre class="r"><code>df %&gt;% group_by(Survey) %&gt;% summarise(survey_count = n())</code></pre>
 <pre><code>## # A tibble: 5 x 2
@@ -505,8 +504,8 @@ library(dplyr)</code></pre>
 <p>Measures of dispersion give us an idea of how spread the data is. Let’s have a look at the common types.</p>
 <div id="minimum-and-maximum" class="section level3">
 <h3>Minimum and maximum</h3>
-<p>The is the most extreme form of looking at dispersion. It lists the smallest and the largest values. The difference between the two is known as the <em>range</em>.</p>
-<p>In the code chunk below, we split the patients according to the group and calculate the minimum and maximum ages. Once again, we give these values and appropriate name of our choice. The functions for minimum and maximum are <code>min()</code> and <code>max()</code>.</p>
+<p>The minimum and maximum values are the most extreme form of looking at dispersion. It lists the smallest and the largest values. The difference between the two is known as the <em>range</em>.</p>
+<p>In the code chunk below, we split the patients according to the <code>Group</code> variable and calculate the minimum and maximum ages. Once again, we give these values an appropriate name of our choice. The functions for minimum and maximum are <code>min()</code> and <code>max()</code>.</p>
 <pre class="r"><code>df %&gt;% 
   group_by(Group) %&gt;% 
   summarise(min_age = min(Age),
@@ -522,7 +521,9 @@ library(dplyr)</code></pre>
 </div>
 <div id="standard-deviation" class="section level3">
 <h3>Standard deviation</h3>
-<p>The standard deviation is the average difference between each value and the mean. The <code>sd()</code> function accomplishes the task. You should be familiar with the syntax by now. Below is the mean and standard deviation of the ages of each of the two groups.</p>
+<p>The standard deviation is the average difference between each value and the mean. The <code>sd()</code> function accomplishes the task. It is shown in equation (2) for a sample.</p>
+<p><span class="math display">\[\sigma = \sqrt{\frac{\sum_{i=1}^{n} {\left( x_i - \bar{x} \right)}^{2}}{n-1}} \tag{2}\]</span></p>
+<p>You should be familiar with the syntax by now. Below is the mean and standard deviation of the ages of each of the two groups.</p>
 <pre class="r"><code>df %&gt;% 
   group_by(Group) %&gt;% 
   summarise(average_age = mean(Age),
@@ -532,10 +533,11 @@ library(dplyr)</code></pre>
 ##   &lt;chr&gt;       &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 I            58.7    11.5
 ## 2 II           58.1    12.0</code></pre>
+<p>Calculating the variance gives us a better appreciation of the standard deviation.</p>
 </div>
 <div id="variance" class="section level3">
 <h3>Variance</h3>
-<p>To calculate the standard deviation, i.e. the average difference between each data point value and the mean of a variable, we do subtraction. Since some of the values will be less than and some larger than the mean, we will get negative and positive numbers. If we sum them all up and divide by how many there are, we would get an answer of zero. Therefor, we square every difference. Squaring results in all values being positive. Now we can divide by the number of values that their are. This is the variance. It is the square of the standard deviation, or seen from a different point of view, the standard deviation is the square root of the variance.</p>
+<p>To calculate the standard deviation, i.e. the average difference between each data point value and the mean of a variable, we do subtraction. Since some of the values will be less than and some larger than the mean, we will get negative and positive numbers. If we sum them all up and divide by how many there are, we would get an answer of zero. Therefor, we square every difference. Squaring results in all values being positive. Now we can divide by the number of values that there are. This is the variance. It is the square of the standard deviation, or seen from a different point of view, the standard deviation is the square root of the variance.</p>
 <p>Below we calculate the variance of the ages of the two groups.</p>
 <pre class="r"><code>df %&gt;% 
   group_by(Group) %&gt;% 
@@ -545,17 +547,17 @@ library(dplyr)</code></pre>
 ##   &lt;chr&gt;   &lt;dbl&gt;
 ## 1 I        133.
 ## 2 II       143.</code></pre>
-<p>We can square the standard deviation of the group I age to chunk out our definition.</p>
+<p>We can square the standard deviation of the group I age to check out our definition.</p>
 <pre class="r"><code>11.53006^2</code></pre>
 <pre><code>## [1] 132.9423</code></pre>
 <p>Bar the small rounding error, we indeed have the variance.</p>
 </div>
 <div id="quantiles" class="section level3">
 <h3>Quantiles</h3>
-<p>Where the median divides the set of numerical data point values into two halves, we can make this division at any arbitrary fraction of the whole. If we split is by the smallest quarter and the larger three quarters, we have what is referred to as the <em>first quartile</em>, also known as the <em>twenty-fith percentile</em>. The median is then actually the <em>second quartile</em> or fiftieth percentile. The three-quarter one-quarter split is the <em>third_quartile</em> or the seventy-fifth percentile. For obvious reasons the minimum is the <em>zeroth</em> quartile and the maximum is the <em>fourth quartile</em>. Any percentile can be used, but the ones listed as the most common to use.</p>
-<p>The <code>quantile()</code> function performs the duty in this instance. It is best to create separate vectors when using the <code>qunatile()</code> function.</p>
+<p>Where the median divides the set of numerical data point values into two halves, we can make this division at any arbitrary fraction of the whole. If we split is by the smallest quarter and the larger three quarters, we have what is referred to as the <em>first quartile</em>, also known as the <em>twenty-fifth percentile</em>. The median is then actually the <em>second quartile</em> or fiftieth percentile. The three-quarter one-quarter split is the <em>third_quartile</em> or the seventy-fifth percentile. For obvious reasons the minimum is the <em>zeroth</em> quartile and the maximum is the <em>fourth quartile</em>. Any percentile can be used, but the ones listed are the most common to use.</p>
+<p>The <code>quantile()</code> function performs the duty in this instance. It is best to create separate vectors when using the <code>quantile()</code> function.</p>
 <pre class="r"><code>group_I_age &lt;- df %&gt;% filter(Group == &quot;I&quot;) %&gt;% select(Age)
-group_I_age &lt;- as.vector(group_I_age$Age)</code></pre>
+group_I_age &lt;- as.vector(group_I_age$Age)  # Overwrite as a vector of values</code></pre>
 <pre class="r"><code>quantile(group_I_age,
          probs = c(0, 0.25, 0.5, 0.75, 1))</code></pre>
 <pre><code>##   0%  25%  50%  75% 100% 
@@ -563,7 +565,7 @@ group_I_age &lt;- as.vector(group_I_age$Age)</code></pre>
 </div>
 <div id="interquartile-range" class="section level3">
 <h3>Interquartile range</h3>
-<p>The interquartile range is the difference between the third and the first quartile value. It is used to detect statistical outliers. If we multiply the interquartile range by <span class="math inline">\(1.5\)</span> and add this to the third quartile and subtract it from the first quartile, we get bounds, beyond which any value is a suspected statistical outlier.</p>
+<p>The interquartile range is the difference between the third and the first quartile values. It is used to detect statistical outliers. If we multiply the interquartile range by <span class="math inline">\(1.5\)</span> and add this to the third quartile and subtract it from the first quartile, we get bounds, beyond which any value is a suspected statistical outlier.</p>
 <p>The <code>IQR()</code> function is used.</p>
 <pre class="r"><code>df %&gt;% 
   group_by(Group) %&gt;% 
@@ -574,6 +576,10 @@ group_I_age &lt;- as.vector(group_I_age$Age)</code></pre>
 ## 1 I          15
 ## 2 II         17</code></pre>
 </div>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>Summary statistics provide our first insight into the knowledge hidden in our data. The use of the <code>dplyr</code> library makes it easy for us to extract the data point values that we require. In combination with the standard R summary statistics functions, we can easily start to understand our data.</p>
 </div>
 
 

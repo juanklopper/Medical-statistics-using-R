@@ -24,19 +24,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Preamble
 
-In this lecture, we will learn how to import a spreadsheet file containing data for a simulated research project (simulated in as much as the data point values for the variables were created using the `sample()` and the `rnorm()` function that we saw in the previous tutorial_.  Once imported, we can extract specific parts of our data to analyze it and thereby answer our research questions.
+In this lecture, we will learn how to import a spreadsheet file containing data for a simulated research project.  Once imported, we can extract specific parts of our data to analyze it and thereby answer our research questions.
 
-In order to extract this data, we need to learn about _addressing_ or _indexing_.  This concept simply refers to an address given to each data point value in a dataset.  The same happens in a Microsoft Excel file, where every cell is named for is column and row value, i.e. _B7_, referring to the data in the cell in column _B_ and in row _7_.
+In order to extract this data, we need to learn about _addressing_ or _indexing_.  This concept simply refers to an address given to each data point value in a dataset.  The same happens in a Microsoft Excel file, where every cell is named for its column and row value, i.e. _B7_, referring to the data in the cell in column _B_ and in row _7_.
 
-Along this exciting journey, we are going to learn about the setting a working directory, the R library (package) ecosystem, indexing, importing a spreadsheet file, and manipulating the data in the file using the _verbs_ that are available in one of the libraries that we are going to import, namely `dplyr`.
+Along this exciting journey, we are going to learn about the setting of a working directory, the R library (package) ecosystem, indexing, importing spreadsheet files, and manipulating the data in the file using the _verbs_ that are available in one of the libraries that we are going to import, namely `dplyr`.
 
 ## Setting the working directory
 
-RStudio has a very powerful project structure.  I find it easier to simply save my R markdown file (this document) and my spreadsheet file in the same directory (folder) on my computer drive.
+RStudio has a very powerful project structure.  It is easier to simply save a R markdown file (this document) and a spreadsheet file in the same directory (folder) on your computer drive.
 
-Once I create an R markdown file, I hit the Save button (or go to File > Save on the menu bar) to save the file with an appropriate name, in an appropriate directory (folder).  I then make sure that my spreadsheet file is in the same directory (folder).
+Once you create an R markdown file, hit the Save button (or go to File > Save on the menu bar) to save the file with an appropriate name, in an appropriate directory (folder).  Then make sure that the spreadsheet file is in the same directory (folder).
 
-We can use code to find the address on our computer drive, where the file was actually stored.  The `getwd()` function stands for _get working directory.  Note that you have to save the R markdown file first, before calling this function.  Let's create a code chunk by hitting __CTL ALT I__ ( __CMD OPT I__ on a Mac).  Remember to get into the habit to write a unique, short, and descriptive name to the chunk.  Also leave some code comments using a hash-tag.
+We can use code to find the address on our computer drive, where the file was actually stored.  The `getwd()` function stands for _get working directory_.  Note that you have to save the R markdown file first, before calling this function.  Below, we create a code chunk by hitting __CTL ALT I__ ( __CMD OPT I__ on a Mac).  Remember to get into the habit to write a unique, short, and descriptive name for the chunk following the `{r}`.  Also leave some code comments using hash-tags.
 
 ```{r Getting the current working directory}
 # Looking for the current working directory on my computer drive
@@ -45,25 +45,24 @@ getwd()
 
 The directory (folder) that contains your file is shown.  Note that even on a Windows computer, forward slashes are used.  If you are familiar with Windows, you know that it uses backslashes to shown the directory structure.
 
-Now, we need to tell R to actually use this directory (folder) as its active directory (folder) when searching for the spreadsheet file that we will import.  This is why I save the two files together.  If the spreadsheet file is in another directory (folder), you have to type the complete directory (folder) structure address to that file.  That is just too much work!  To set the active director (folder) to the current directory (folder), we use the `setwd()` function and place the `getwd()` as its argument.
+Now, we need to tell R to actually use this directory (folder) as its active directory (folder) when searching for the spreadsheet file that we might want to import.  This is why saving the two files together is so important.  If the spreadsheet file is in another directory (folder), you have to type the complete directory (folder) structure address to that file.  That is just too much work!  To set the active director (folder) to the current directory (folder), we use the `setwd()` function and place the `getwd()` as its argument.  An argument is the information that a keyword (called a function) uses to _do its job_.
 
 ```{r Set the active working directory, message=FALSE, warning=FALSE}
+# The keyword (function) is setwd() and the argument is another function called getwd()
 setwd(getwd())
 ```
-
-I usually place this right inside of the opening _setup_ junk that RStudio creates as boilerplate code.
 
 Before we get to importing and working with spreadsheet files, let's create some simulated data so that we can look at indexing (or addressing).
 
 ## Creating computer variables to work with
 
-First, we will create a computer variable called `age` to hold $20$ random value between $15$ and $85$ (inclusive).  The `sample()` function means that we will take it from uniform distribution, where every value in the sample space of the statistical variable (i.e. $15,16,17,\ldots , 85$) has an equal likelihood of being selected.
+First, we will create a computer variable called `age` to hold $20$ random value between $15$ and $85$ (inclusive).  The `sample()` function means that we will take it from a uniform distribution, where every value in the sample space of the statistical variable (i.e. $15,16,17,\ldots , 85$) has an equal likelihood of being selected.
 
 ```{r Creating an age variable}
 set.seed(123)  # So that we all get the same pseudorandom numbers
-age <- sample(15:85,
-              20,
-              replace = TRUE)
+age <- sample(15:85,  # The range to select from
+              20,  # The number of values required
+              replace = TRUE)  # Replace means that the selected number is available fro the next rounds
 ```
 
 Now that we have a computer variable called `age`, when can introduce the `length()` function.  It counts how many elements there are in the object that we pass as argument.
@@ -82,13 +81,13 @@ age
 
 ## Using indexing (addressing) to select specific values
 
-You will notice that the `age` variable appears in the Environment tab on the top right-hand side of the screen.  It states `int [1:20]` and then starts listing the actual values.  From this we can guess that every element's address is the number $1$ through $20$.  this is indeed so.  Below, the, we use square brackets (indicating indexing) and ask for the value with an index (address) of `1`.
+You will notice that the `age` variable appears in the Environment tab on the top right-hand side of the screen (if you left the Panel settings in RStudio at its default values).  It states `int [1:20]` and then starts listing the actual values.  From this, we can guess that every element's address is the number $1$ through $20$.  This is indeed so.  Below, we use square brackets (indicating indexing) and ask for the value with an index (address) of `1`.
 
 ```{r Show th first value}
 age[1]
 ```
 
-When we look at the list we printed out above, we see that $35$ was indeed the first value.  Remember that this will only be true for you if you also used `set.seed(123)`.  Let's have a look at the fifth value, which should be $81$.
+When we look at the list we printed out above, we see that $35$ was indeed the first value.  Remember that this will only be true for you if you also used `set.seed(123)`.  Omitting the `set.seed()` function will result in different value generated each time the code chunk is executed.  A different integer value will also result in a different set of values.   Let's have a look at the fifth value, which should be $81$.
 
 ```{r Show the fifth value}
 age[5]
@@ -106,7 +105,7 @@ If we only want values one and five, we pass these values as an atomic vector, u
 age[c(1, 5)]
 ```
 
-Now we consider something a bit more interesting.  What about selecting values based on a rule?  In the code chunk below we ask for only values that are equal to larger than $50$.  Note that we use the computer variable name twice!
+Now we consider something a bit more interesting.  What about selecting values based on a rule?  In the code chunk below, we only ask for values that are equal to or larger than $50$.  Note that we use the computer variable name twice!
 
 ```{r Only values equal to or large than 50}
 age[age >= 50]
@@ -118,15 +117,15 @@ We can specify more than one rule.  Below, we ask for all values that are less t
 age[age < 30 | age > 50]
 ```
 
-Note that every value is either below $30$ or larger than $50$.
-
-Good, let's import our spreadsheet file. Wait, wait, wait, first let's import a library.
+Note that every value is either below $30$ or larger than $50$.  This code actually runs through all of the $20$ values in our set, one by one.  For each one is asks the question: "Is this value equal to or larger than $50$?".  This is referred to as a logical operation or Boolean logic.  If the value is equal to or larger than $50$,  logical value of `TRUE` is returned and the value is included in the final result.  If not, a logical value of `FALSE` is returned and the value is not included.
 
 ## Importing a library
 
-Packages or libraries are written by the huge community of developers of the R language from all over they world, kindly donating their skills and time to make our lives easier!  Libraries are installed in the Packages tab on the bottom right panel.  Simply type the name of the package in the search box after hitting the Install button.  Allow time for the package to be installed from the internet.
+Packages or libraries are written by the huge community of developers of the R language from all over they world.  They kindly donate their skills and time to make our lives easier!  Libraries are installed in the Packages tab on the bottom right panel.  Simply type the name of the package in the search box after hitting the Install button.  Allow time for the package to be installed from the internet and answer _Yes_ if any question is asked in a pop-up box.
 
-After installation, we have to import the library for use in our current R markdown file.  So, go ahead and first install the `readr` and the `dplyr` libraries.  Below, we then import them (individually) using the `library()` function.  Note that after the name of the chunk, is a comma and then `message=FALSE` and then another comma and the `warning=FALSE`.  This can be added manually, or by deselecting the buttons after hitting the little gear icon of a chunk.  The effect is that message and warning that are sometimes displayed on importing libraries are not shown.  In most cases these are superfluous.
+After installation, we have to import the library for use in our current R markdown file.  So, go ahead and first install the `readr` and the `dplyr` libraries.  Below, we then import them (individually) using the `library()` function.
+
+Note that after the name of the chunk, is a comma and then `message=FALSE` and then another comma and the `warning=FALSE`.  This can be added manually, or by deselecting the buttons after hitting the little gear icon of a chunk.  The effect is that messages and warnings that are sometimes displayed on importing libraries are not shown.  In most cases, these are superfluous.
 
 ```{r Importing readr and dplyr, message=FALSE, warning=FALSE}
 library(readr)
@@ -137,9 +136,9 @@ The `dplyr` library contains all the function which we will use to extract data 
 
 ## Importing a data file
 
-The `readr` library contains a function called `read_csv()`.  There is a `read.csv()` function in base R (without importing the `readr` library).  The `read_csv()` function is more useful, though.  It creates an object called a _tibble_.  A tibble has some advantages over a traditional _dataframe_.  Tibbles print nicely to most screen and it interprets categorical variables as well, categorical variables, as opposed to factors.  More about this in future tutorials.
+The `readr` library contains a function called `read_csv()`.  There is a `read.csv()` function in base R (without importing the `readr` library).  The `read_csv()` function is more useful at times, though.  It creates an object called a _tibble_.  A tibble has some advantages over a traditional _data frame_, which is the result of importing a file with the `read.csv()` function.  Tibbles print nicely to most screens and it interprets categorical variables as well, categorical variables, as opposed to factors.  More about this in future tutorials.
 
-Note that the spreadsheet file is in `.csv` or _comma separated values_ format.  This is much more generic than Microsoft `.xslx` format.  When you are in Excel, simply save the file as a `.csv` file.  Its trips away all the bells-and-whistles added by Microsoft that really just clutter things up.  If given a choice, always select __MS-DOS csv__.
+Note that the spreadsheet file is in `.csv` or _comma separated values_ format.  This is much more generic than Microsoft's `.xslx` (Excel) format.  When you are in Excel, simply save the file as a `.csv` file.  It strips away all the bells-and-whistles added by Microsoft that really just clutter things up.  If given a choice, always select __MS-DOS csv__ when saving a spreadsheet file.
 
 In the chunk below, we import the `ProjectData.csv` file.  Because it is in the same directory (folder) than the R markdown file, we can just refer to it, without using a long computer drive address, simply because we use the `setwd(getwd())` functions above.  We import the spreadsheet file in the computer variable `df`.
 
@@ -149,9 +148,9 @@ df <- read_csv("ProjectData.csv")
 
 ## Exploring the data
 
-Note that there is now a `df` variable in the Environment tab on the top right of the interface.  To the far right of it is a little spreadsheet file icon.  Click it to open a spreadsheet-like view of the imported data.  You can also write `View(df)` in a code chunk.
+Note that there is now a `df` variable in the Environment tab on the top right of the interface.  To the far right of it is a little spreadsheet file icon.  Click it to open a spreadsheet-like view of the imported data.  You can also write `View(df)` in a code chunk to achieve the same result.  A tab will open next to the current file's tab at the top of the left-hand, upper panel.
 
-The first thing to do is to look at the size of our data, i.e. how many rows of data (how many subjects in our study) and how many variables (columns).  We use the `dim()`, short for dimensions, function.
+The first thing to do is to look at the size of our data, i.e. how many rows of data (how many subjects in our study) and how many variables (columns).  We use the `dim()`, short for dimensions, function to do this.
 
 ```{r Size of the data}
 dim(df)
@@ -163,9 +162,9 @@ We can view the statistical variable names (in the columns in row 1), using the 
 names(df)
 ```
 
-We see a list of the eight variables.  Note how every variable name is descriptive of the data that it represents.  Note also that there are no _illegal_ characters in the variables names, such as spaces, parentheses, and so on.  
+We see a list of the eight variables.  Note how every variable name is descriptive of the data that it represents.  Note also that there are no _illegal_ characters in the variables names, such as spaces, parentheses, and so on.  (See chapter 01.)
 
-To see the values in a variable (each row in that column), we use the dollar `$` notation.  Let's look at the chunk below.  We do not want to list all $500$ values, so we use indexing (with square brackets remember) to show the first five rows of the _Age_ statistical variable.
+To see the values in a variable (each row in that column), we use the dollar `$` notation.  Let's look at the chunk below.  We do not want to list all $500$ values, so we use indexing (with square brackets) to show the first five rows of the _Age_ statistical variable.
 
 ```{r First 5 age value}
 df$Age[1:5]
@@ -195,20 +194,20 @@ We are not restricted to the first six rows, but can actually specify the number
 
 ```{r First 10 data point values of all the variables}
 head(df,
-     10)
+     10)  # Placing each argument on its own line makes code more readable
 ```
 
 ## The dplyr library
 
-The `dplyr` library provides some of the most useful functions ever to have been added to R.  They follow a convention that is slightly different from R and is referred to as the _tidyverse_, or sometimes (against his will) as the _Hadley-verse_ after its inventor, Hadley Wickham.
+The `dplyr` library provides some of the most useful functions to have been added to R.  They follow a convention that is slightly different from R and is referred to as the _tidyverse_, or sometimes (against his will) as the _Hadley-verse_ after its inventor, Hadley Wickham.
 
-The tidyverse set of libraries allow for the use of the pipe, `%>%` operator.  A frightful thing when you first start using it, but an absolute powerful delight when you get used to it.
+The tidyverse set of libraries allow for the use of the pipe, `%>%` operator.  A frightful thing when you first start using it, but an absolute powerful delight when you get use to it.
 
-The functions in `dplyr` are called _verbs_ and for good reason.  Let's start by looking at the `filter()` function.  Note that when referring to `dplyr` I will use the terms __function__ and __verb__ interchangeably.
+The functions in `dplyr` are called _verbs_ and for good reason.  Let's start by looking at the `filter()` function.  Note that when referring to `dplyr`, the terms __function__ and __verb__ will be used interchangeably.
 
 ### filter
 
-Our first function in `dplyr` is the `filter()`.  As with indexing (addressing), it allows us to provide a recipe for selecting data.  So, let's look down the _Age_ column and return only the values greater than $80$.  You will note that the first argument is the actual computer variable that holds our spreadsheet file.  The second argument references the statistical variable (column name) and the recipe.  Note that we don't use the `$` notation with these verbs.
+Our first function in `dplyr` is `filter()`.  As with indexing (addressing), it allows us to provide a recipe for selecting data.  So, let's look down the _Age_ column and return only the values greater than $80$.  You will note that the first argument is the actual computer variable that holds our spreadsheet file.  The second argument references the statistical variable (column name) and the recipe (using Boolean logic).  Note that we don't use the `$` notation with these verbs.
 
 ```{r Filter only Age data point values larger than 80}
 filter(df, Age > 80)
@@ -222,7 +221,7 @@ Before we carry on, let's plunge right into using the pipe operator.  The sooner
 df %>% filter(Age > 80)
 ```
 
-It's actually quite easy.  We take out the first argument, which is the computer variable name and put it before the pipe.  The pipe actually just say: "Take what is to the left of me and pass it as first argument to the function that is to my right.  Thank you very much for your cooperation.".  By the way, the keyboard shortcut for the pipe operator is __SHFT CTRL M__ ( __SHFT CMD M__ on a Mac).
+It's actually quite easy.  We take out the first argument, which is the computer variable name and put it before the pipe.  The pipe actually just says: "Take what is to the left of me and pass it as first argument to the function that is to my right.  Thank you very much for your cooperation.".  By the way, the keyboard shortcut for the pipe operator is __SHFT CTRL M__ ( __SHFT CMD M__ on a Mac).
 
 Let's try that again and select only patients that have a _I_ marked as their _Group_ data point value.
 
@@ -230,15 +229,15 @@ Let's try that again and select only patients that have a _I_ marked as their _G
 df %>% filter(Group == "I")
 ```
 
-We use the double equal sign, `==` to ask what is referred to as a Boolean question.  It goes row by row and check whether the value is indeed _I_.  If so, an answer of `TRUE` is returned and that row is included.
+We use the double equal sign, `==` in the case of Boolean logic.  As mentioned before, it goes row by row and checks whether the value is indeed _I_.  If so, an answer of `TRUE` is returned and that row is included.
 
-Now let's get fancy and provide two recipes.  Patients older than $80$ __and__ who are in group I.  he and symbol is `&`.  Each recipe is placed in a set of parenthesis.
+Now let's get fancy and provide two recipes.  Patients older than $80$ __and__ who are in group I.  The symbol for _and_ is `&`.  Each recipe is placed in a set of parenthesis.
 
 ```{r Age over 80 in group I}
 df %>% filter((Age > 80) & (Group == "I"))
 ```
 
-Great, let's go for another verb
+Great, let's go for another verb.
 
 ### select
 
@@ -257,7 +256,7 @@ df %>% filter((Age > 80) & (Group == "I")) %>%
 
 Whoa!
 
-In the first tutorial, we created a computer variable by giving it an appropriate name and then we either manually entered some values using the `c()` function or we created random values using the `sample()` or the `rnomr()` functions.  By using the `filter()` and the `select()` function, we can create similar computer variables to hold lists of values that we can then pass as arguments to the statistical tests that we want to conduct.
+In the first tutorial, we created a computer variable by giving it an appropriate name and then we either manually entered some values using the `c()` function or we created random values using the `sample()` or the `rnomr()` functions.  By using the `filter()` and the `select()` functions, we can create similar computer variables to hold lists of values that we can then pass as arguments to the statistical tests that we want to conduct.
 
 So, let's set up a very simple research question.  We want to divide our patients into those that are in group I and those that are in group II.  When then want to create a list of the `CRP` values for each group.  Let's name the first list of CRP value `group_I_CRP` and the group II equivalent, `group_II_CRP`.  We will combine our two functions, `filter()` and `select()` to do this.
 
@@ -301,13 +300,13 @@ The `mutate()` function allows us to create new variables (columns) in the datas
 head(df$Weight)
 ```
 
-There are $2.21$ pounds in each kilogram, so, we have to divide each value by $2.21$.  We do this through the concept of _broadcasting_.  Below is a simple example of a list of five values and we simply multiply each by $5$.
+Let's create a new variable (column) which contains the weight of each subject in kilograms.  There are $2.21$ pounds in each kilogram, so, we have to divide each value by $2.21$.  We do this through the concept of _broadcasting_.  Below is a simple example of a list of five values and we multiply each by $5$ by using R's ability to _broadcast_.
 
 ```{r Broadcasting}
 5 * c(1, 2, 3, 4, 5)
 ```
 
-Note how the multiplication by 45$ is _broadcasted_ to each element in the vector object.
+Note how the multiplication by $5$ is _broadcasted_ to each element in the vector object.
 
 Here goes the `mutate()` function.
 
@@ -315,7 +314,7 @@ Here goes the `mutate()` function.
 df %>% mutate(Weight_kg = Weight / 2.21)
 ```
 
-This added the new variable, but the change is not permanent.
+This added the new variable, which we called `Weight_kg`.  The change is not permanent, though.
 
 ```{r The change is not permamanent}
 names(df)
@@ -324,28 +323,29 @@ names(df)
 The easiest way to make the change permanent is to overwrite the original computer variable.
 
 ```{r Making the change permanent}
+# Returning the names and types of the column headers (variables)
 df <- df %>% mutate(Weight_kg = Weight / 2.21)
 names(df)
 ```
 
-One more important use for the `mutate()` function is the creation of a new categorical variable by _binning_ a numerical variable.  With _binning_ we refer to creating lower and upper bounds and assigning a sample space element for a categorical variable for each numerical data point value.
+One more important use for the `mutate()` function is the creation of a new categorical variable by _binning_ a numerical variable.  With _binning_, we refer to creating lower and upper bounds and assigning a sample space element for a categorical variable for each numerical data point value.
 
-To do this, let's first look at the `pull()` function.  It extracts a columns (or selected data point values in a column) as a list of values.
+To do this, let's first look at the `pull()` function.  It extracts a column (or selected data point values in a column) as a list of values.
 
 ```{r Extracting }
 crp <- pull(df %>% select(CRP))
 ```
 
-We can now, for instance, decide to create three bins, by dividing the data point values for the `CRP` variable into three equaly-sized bins (depending if the sample size is divisible by the number of bins we wish to create and if there are ties in the values).
+We can now, for instance, decide to create three bins, by dividing the data point values for the `CRP` variable into three equally-sized bins (depending if the sample size is divisible by the number of bins we wish to create and if there are ties in the values).  To do this, we use the `cut()` function.
 
 ```{r Creating three bins}
 cut(crp,
     3)
 ```
 
-Now we note a categorical data point value for each of the $500$ numerical `CRP` values.  Because we did not provide three sample space values, we note (at the bottom), three _Levels_ names.  Levels indicate that this is a categorical variable and then states the elements in the sample space.  The `(` and `]` notation is mathematical in nature.  The former indicates an open domain and the latter a closed domain.  So for the first element we will have values from $4.49$ to $6.53$.  The latter is included, i.e. if a data point value is actually $6.53$, it will be included in that bin.
+Now we note a categorical data point value for each of the $500$ numerical `CRP` values.  Because we did not provide three sample space values, we note (at the bottom), three _Levels_ names. Levels indicate that this is a categorical variable and then states the elements in the sample space.  The `(` and `]` notation is mathematical in nature.  The former indicates an open domain and the latter a closed domain.  So for the first element we will have values from $4.49$ to $6.53$.  The latter is included, i.e. if a data point value is actually $6.53$, it will be included in that bin.
 
-Let's define our our data point values for the sample space, perhaps `Low`, `Medium`, and `High`.  We also use the `mutate()` function to create  a new variable to this new categorical variable.  We will call it `CRP_group`.
+Let's define our data point values for the sample space, perhaps `Low`, `Medium`, and `High`.  We also use the `mutate()` function to create a new variable.  We will call it `CRP_group`.  To make the change to the tibble permanent, we overwrite the old tibble by simply stating `df <-`.
 
 ```{r Creating a new categorical variable}
 df <- df %>% mutate(CRP_group = cut(pull(df %>% select(CRP)),
@@ -361,4 +361,6 @@ table(df$CRP_group)
 
 ## Conclusion
 
-There are more verbs in the `dplyr` library.  We will meet them in future tutorials.
+For many research projects, data collection is done in the form of a spreadsheet.  Even if database software using the structure query language (SQL) or other database frameworks are used, it is common to extract the data as a spreadsheet.  R and the appropriate libraries make for a powerful tool in manipulating this data for analysis.
+
+The `filter()` and `select()` function are the two most common verbs that we will use on our data analysis.  There are more verbs in the `dplyr` library.  We will meet them in future tutorials.

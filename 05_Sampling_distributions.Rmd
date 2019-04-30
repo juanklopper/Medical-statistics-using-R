@@ -22,7 +22,7 @@ setwd(getwd())
 
 ## Preamble
 
-In statistics our aim to to discover information about a population or differences between populations. Populations are enormous and in most cases, we cannot get data from each subject.  Instead we pick representative samples from a population or populations and describe or compare those subjects only.  This saves time and money and makes discovery about the information we seek possible.  Inferential statistics is all about the analysis of our sample data and inferring those result onto the populations.
+In statistics our aim is to discover information about a population or differences between populations. Populations are enormous and in most cases, we cannot get data from each subject in a population.  Instead, we pick representative samples from a population or populations and describe or compare those subjects only.  This saves time and money and makes discovery about the information we seek possible.  Inferential statistics is all about the analysis of our sample data and inferring those result onto the populations.
 
 Just as data point values from samples and populations come in patterns known as distributions, so does statistical values such as the mean, differences in means, standard deviations and so on.  These distributions are known as _sampling distributions_.
 
@@ -50,9 +50,9 @@ hist(population,
      ylim = c(0, 250))
 ```
 
-The histogram shows that each value appears appears in our dataset with the counts being roughly equal.
+The histogram shows that each value appears in our dataset with the counts being roughly equal.
 
-Now we consider doing some research on our population.  We select $30$ subjects at random and calculate the mean of the variable values.
+Now we consider doing some research on our population.  We select $30$ subjects at random and calculate the mean of the variable data point values.
 
 ```{r Our first experiment}
 set.seed(123)
@@ -61,7 +61,7 @@ mean(sample(population,
             replace = TRUE)) # Calculate the mean of 30 random subjects
 ```
 
-We note a mean of $15.9$.  Consider the following, though: _What if we started our experiment a week later?_  We would get a different random sample of $30$ subjects.  We can simulate this with seeding the pseudo-random number generator with a different value.  (Remember that we are only using the `set.seed()` function to get reproducible results and by omitting it, we would get different values each time we run the code.)
+We note a mean of $15.9$.  Consider the following, though: _What if we started our experiment a week later_?  We would get a different random sample of $30$ subjects.  We can simulate this with seeding the pseudo-random number generator with a different value.  (Remember that we are only using the `set.seed()` function to get reproducible results and by omitting it, we would get different values each time we run the code.)
 
 ```{r Repeating our experiment}
 set.seed(321)
@@ -70,9 +70,9 @@ mean(sample(population,
             replace = TRUE))
 ```
 
-Now we have a mean of $15.6$.  What if we ran our experiment $10$ times, recording the mean each time?  Well, we would have $10$ _random alues_ of a statistical variable.  Yes indeed, a statistic such as the mean can be a variable!
+Now we have a mean of $15.6$.  What if we ran our experiment $10$ times, recording the mean each time?  Well, we would have $10$ _random values_ of a statistical variable.  Yes indeed, a statistic such as the mean can be a variable!
 
-In the code chunk below, we use a `for` loop to run our experiment $10$ times, appending the mean of each run of $30$ subjects to an initial empty computer variable called `sample_10`. Then we create a histogram of the $10$ values.
+In the code chunk below, we use a `for` loop to run our experiment $10$ times, appending the mean of each run of $30$ subjects to an initial empty computer variable called `sample_10`. Then we create a histogram of the $10$ values.  The actual R code is not of interest here and you need not follow it.  Rather understand the statistical concepts.
 
 ```{r Repeat study 10 times}
 sample_10 <- c()  # Creating an empty vector
@@ -113,7 +113,9 @@ hist(sample_1000,
      labels = TRUE)
 ```
 
-What we have here is the CLT in action.  A statistic (the mean in this example) tends to a normal distribution as we increase the number of times we randomly calculate it!  This is profound.  From our $1000$ repeats we see that by chance we would only see a mean of $17$ or more `r 1 / 1000 *100`% of the time or less than $14.5$ `r 21 / 1000 *100`% of the time.  If we express this as fraction, that would be `r 1 / 1000` and `r 21 / 1000`.  Letting the cat out of the bag, these are probabilities, leading us to _p_ values!  In reality, we cannot repeat an experiment $1000$ times.  We would do it just once, i.e getting a different mean with a specific probability.  That once could be any one of the $1000$ experiments (or more) that we created above.
+What we have here is the CLT in action.  A statistic (the mean in this example) tends to a normal distribution as we increase the number of times we randomly calculate it!  This is profound.  From our $1000$ repeats, we see that by chance we would only see a mean of $17$ or more `r 1 / 1000 *100`% of the time or less than $14.5$ `r 21 / 1000 *100`% of the time.  If we express this as fraction, it would be `r 1 / 1000` and `r 21 / 1000`.  Letting the cat out of the bag, these are probabilities, leading us to _p_ values
+
+In reality, we cannot repeat an experiment $1000$ times.  We would do it just once, i.e getting a different mean with a specific probability.  That once could be any one of the $1000$ experiments (or more) that we created above.
 
 ## The deity experiment
 
@@ -121,7 +123,9 @@ Let's take the big step and put all of this in perspective.  This will allow a t
 
 Below, we simulate a new research project.  We set it up, though, such that we know all the values for a specific variable.  In this experiment, there are only $8000$ subjects in the whole population.  Imagine some rare disease, or laboratory experiment in which there are only $8000$ specific genetic individuals.
 
-In this experiment, we take two roles.  In the first, we are a researcher.  We think that the $8000$ subjects are distinct for a specific variable and actual make up two populations.  We want to know if there is a statistically significant difference between the two population for the variable under consideration.  We also take the role of an imaginary deity.  This deity knows that there is no difference between the two populations.  We simulate this by creating two sets of vectors, drawing $4000$ random values with the same parameters for each.
+In this experiment, we take two roles.  In the first, we are a researcher.  We think that the $8000$ subjects are distinct for a specific variable and actual make up two populations.  We want to know if there is a statistically significant difference between the two population for the variable under consideration.
+
+We also take the role of an imaginary deity.  This deity knows that there is no difference between the two populations.  We simulate this by creating two sets of vectors, creating $4000$ random values with the same parameters for each.
 
 ```{r Creating two similar populations}
 set.seed(123)
@@ -133,16 +137,17 @@ group_B_population <- sample(30:70,
                              replace = TRUE)
 ```
 
-Now we run an experiment $10000$ times.  Each time we take a random $30$ subjects from each population and calculate the mean of our variable for each group. We subtract the two means, so as to capture $1000$ differences in means.  We will then have a sampling distribution of $10000$ means.  As you can guess by now, the CLT guarantees a normal distribution. 
+Now we run an experiment $1,000$ times.  Each time we take a random $30$ subjects from each population and calculate the mean of our variable for each group. We subtract the two means, so as to capture $1,000$ differences in means.  We will then have a sampling distribution of $1,000$ means.  As you can guess by now, the CLT guarantees a normal distribution. 
 
 ```{r Drawing random samples 10000 times}
-sample_10000 <- c()
+set.seed(123)
+sample_1000 <- c()
 for (i in 1:1000){
-  sample_10000 <- append(sample_10000,
+  sample_1000 <- append(sample_1000,
                          mean(sample(group_A_population, size = 30, replace = TRUE)) -
                            mean(sample(group_B_population, size = 30, replace = TRUE)))
 }
-hist(sample_10000,
+hist(sample_1000,
      main = "Deity experiment",
      xlab = "Difference between means",
      ylab = "Count",
@@ -150,25 +155,113 @@ hist(sample_10000,
      labels = TRUE)
 ```
 
-This is, once again, profound!  Remember that in real life, we would only do our research experiment once.  Our difference in means would be one of the $10000$ above.  Theoretically the CLT is described as the number of experiments approaches infinity, but $10000$ already brings the point home.
+This is, once again, profound!  Remember that in real life, we would only do our research experiment once.  Our difference in means would be one of the $1,000$ (and more) above.  Theoretically the CLT is described as the number of experiments approaches infinity, but $1,000$ already brings the point home.
 
-Imagine then that our one experiment was one that found a difference a $10.5$  From the approximation, we can deduce that that would only occur `r 2 / 10000` times.  We would express this as a statistically significant result and claim that there is a difference between the two populations.  Remember, though, as deity we set this up so that there never was a difference.  This, though, is inferential statistics.  It is based on calculations given that there is no difference between populations.  As humans, we decide on an arbitrary cut-off of say $0.05$ beyond which we claim a difference.  There might very well be, but that is not the way inferential statistics work.  It is based on theoretical sampling distributions for NO DIFFERENCES.
+Imagine then that our one experiment was one that found a difference a $9.5$  From the approximation, we can deduce that that would only occur `r 5 / 1000` times.  We would express this as a statistically significant result and claim that there is a difference between the two populations.  Remember, though, as deity, we set this up so that there never was a difference.  This, though, is inferential statistics.  It is based on calculations given that there is no difference between populations.  As humans, we decide on an arbitrary cut-off of say $0.05$ beyond which we claim a difference.  There might very well be, but that is not the way inferential statistics work.  It is based on theoretical sampling distributions for NO DIFFERENCES.
 
 From our deity experiment it was easy to recreate a study many, many times over.  In real-life, we only get to do our study once (with others perhaps replicating it later).  How then do we know how the histogram above should look like, given that we do not have access to all the repeat studies?  
 
-First of all, it is important to note that in mathematical statistics we deal with a smooth curve and not a frequency distribution (histogram) as above.  There are actual equations that draw smooth curves given our data.  These equations take only information from our one study to draw these curves, called cumulative distributions curves.  Statisticians have developed fantastical equations for any number of sampling distributions.
+First of all, it is important to note that in mathematical statistics, we deal with a smooth curve and not a frequency distribution (histogram) as above.  There are actual equations that draw smooth curves given our data.  These equations take only information from our one study to draw these curves, called cumulative distributions curves.  Statisticians have developed fantastical equations for any number of sampling distributions.
+
+## The _z_ distribution
+
+This is the quintessential distribution and is, in fact, the normal distribution.  For its use as a sampling distribution, i.e. to investigate the differences in means for a numerical between two groups, we need to know the population standard deviation for this difference.
+
+Imagine, then, that we know it to be $1$.  With a mean of $0$, this results in the standard normal distribution shown in the plot below.
+
+```{r Normal distribution}
+curve(dnorm(x,
+            0,
+            1,),
+      from = -3, to = 3,
+      lwd = 2,
+      main = "Normal distribution",
+      ylab = "Distribution",
+      xlab = "z statistic")
+```
+
+
+Any given diference must be converted to a _z_ score (also known as a _z_ statistic).  This is shown in equation (1).
+
+$$ z = \frac{x - \mu}{\sigma} \tag{1}$$
+
+If we ran an experiment and found a difference in means of $-1.2$, we can convert this into a _z_ score using equation (1).
+
+```{r Calculating a z score}
+z = (-1.2 - 0) / 1
+z
+```
+
+We can show this on our plot of the normal distribution.
+
+```{r z distribution with z score of -1.2}
+curve(dnorm(x,
+            0,
+            1),
+      from = -3, to = 3,
+      lwd = 2,
+      main = "z distribution",
+      ylab = "Distribution",
+      xlab = "z score")
+abline(v = -1.2,
+       col = "red")
+```
+
+This is _how many standard deviations_ the result is from the mean.  Our question then revolves around how likely it was to find such a difference (area under the curve to the left of the vertical line indicating the $-1.2$ standard deviations away from the mean (or a _z_ score of $-1.2$).  We can use the `pnorm()` function to caluclate this.
+
+```{r p value for our difference}
+pnorm(-1.2,  # Difference in means
+      0,  # Mean
+      1)  # Standard deviation
+```
+
+We note an $11.5$% chance of a difference of $-1.2$ or less.
+
+For an example where we know that the standard deviation of the difference in means is $3$, we can ask what the probability is of a difference of $4.5$ or more.  Remember that we can have $4.5$ or $-4.5$ depending which group we subtract form which group.
+
+```{r z score for new probelm}
+z = (4.5 - 0) / 3
+z
+```
+
+Since our research question involved only a difference (a two-tailed alternative hyspothesis - see next chapter), we need to duplicate this on the right-hand side of the bell-shaped curve as well, i.e. $-1.5$.  We should also mutiply the results by $2$ to get a _p_ value for our research question (see the following plot).
+
+```{r p value for our new difference}
+pnorm(-1.5,  # Difference in means
+      0,  # Mean
+      3) * 2  # Standard deviation
+```
+
+We visualize this in the plot below.
+
+```{r z score for a two tailed hypothesis}
+curve(dnorm(x,
+            0,
+            3),
+      from = -6, to = 6,
+      lwd = 2,
+      main = "z distribution",
+      ylab = "Distribution",
+      xlab = "z score")
+abline(v = -1.5,
+       col = "red")
+abline(v = 1.5,
+       col = "red")
+```
+
+The plot is very informative.  For a known difference in population means of $0$ with a standard deviation of this difference of $3$, we see that a difference in means finding of $-4.5$ results in a _z_ score of $-1.5$ (or $ -1.5 $ standard deviations away from the mean).  Since we are interested in a difference of at least this _large_, we duplicate our difference on the right-hand side, i.e. a _z_ score of $4.5$.  The probability of finding a difference in means of at least $4.5$ (positive or negative) $0.62$.  We can state a _p_ value of $0.67$.  This is the area under the curve to the left of the $-4.5$ line added to the area under the curve to the right of the $4.5$ line.
 
 ## The _t_ distribution
 
-One of the most common sampling distributions is the _t_ distribution.  If we knew the standard deviation for a variable in a whole population, we can create what is called the _z_ distribution.  It is bell-shaped with a mean of $0$.
+One of the most common sampling distributions is the _t_ distribution.  If we knew the standard deviation for a variable in a whole population (the standard deviation of the difference in means for two groups for instance), we can create what is called the _z_ distribution, as mentioned.
 
 Since we hardly ever know the standard deviation for a variable in a whole population, we make do with the _t_ distribution.  This sampling distribution requires only one parameter from our data and that is the sample size.
 
 We use the _t_ distribution when comparing a numerical variable between two groups.  It forms the basis for the famous Student's _t_ test, developed by William Cosset, while working at the Guinness Brewing Company.  The parameter we take from our sample is then the sample size minus the number of groups.  This is called the _degrees of freedom_ (DOF).  Since we are comparing two groups, with sample sizes $n_1$ and $n_2$, we will have a DOF value of $n_1 + n_2 - 2$.
 
-The _t_ distribution appears very much bell-shaped.  For larger sample sizes, this distribution actually approximates the normal distribution.
+The _t_ distribution appears very much bell-shaped.  For larger sample sizes, this distribution actually approximates the _z_ distribution.
 
-In the graph below we see a dark line representing a DOF value of $30$.  Considering the mean at $0$, we see successive curves for DOF values of $1,2,3,4,10$ (from the bottom up).
+In the graph below, we see a dark line representing a DOF value of $30$.  Considering the mean at $0$, we see successive curves for DOF values of $1,2,3,4$ and $10$ (from the bottom up).
 
 ```{r The t distribution}
 curve(dt(x, df = 30),
@@ -182,9 +275,9 @@ for (i in ind) curve(dt(x, df = i), -3, 3, add = TRUE)
 
 ## The $\chi^2$ distribution
 
-Another common sampling distribution is the $chi^2$ distribution.  It also takes one parameter from our sample being the DOF.  It is calculated a bit differently, though.
+Another common sampling distribution is the $chi^2$ distribution.  It also takes one parameter from our sample, being the DOF.  It is calculated a bit differently, though.
 
-We commonly use the $chi^2$ distribution when dealing with categorical variables.   In the graph below, we see a dark line representing a DOF value of $1$.  Successive curves have DOF values of $2,3,5$, and,$10$.
+We commonly use the $chi^2$ distribution when dealing with categorical variables.   In the graph below, we see a dark line representing a DOF value of $1$.  Successive curves have DOF values of $2,3,5$, and $10$.
 
 ```{r The chi-squared distribution} 
 curve(dchisq(x,
@@ -203,5 +296,7 @@ for (i in ind) curve(dchisq(x,
 ```
 
 ## Conclusion
+
+Sampling distributions are the bedrock of inferential statistics and we use them to calculate our _p_ values for reporting in a journal article.
 
 We will see these sampling distributions in action when we conduct _t_ and $\chi^2$ tests.  Their meaning will become crystal clear then.

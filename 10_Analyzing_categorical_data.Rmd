@@ -26,7 +26,7 @@ library(dplyr)
 
 ## Preamble
 
-Many research projects contain categorical, and more specifically, nominal categorical variables.  The sample space of these variables are not numbers, yet we require some way of analyzing it.
+Many research projects contain categorical, and more specifically, nominal categorical variables.  The sample space of these variables are not numbers, yet we require some way of analyzing them.
 
 To the rescue comes the tests for categorical variables where we use the counts of the sample space elements to answer our research questions.
 
@@ -46,7 +46,7 @@ One of the variables in the dataset is `Improvement`.  In this simulated dataset
 table(df$Improvement)
 ```
 
-A total of $156$ patients did not improve, whereas $144$ did.  Before starting the data collection, we might have suspected a $0.5:0.5$ split in the data.  This refers to the _proportions_ in the $\chi^2$ test for proportions.  Instead, we found proportions of `r 156 / (156 + 144)`:`r 144 / (156 + 144)`.  We can test our findings against the expected proportions using the `chisq.test()` function.  The first argument is a numeric vector containing the actual counts.  The `p =` argument holds a numerical vector containing the expected proportions, which must sum to $1.0$.
+A total of $156$ patients did not improve, whereas $144$ did.  Before starting the data collection, we might have suspected a $0.5:0.5$ split in the data.  Instead, we found proportions of `r 156 / (156 + 144)`:`r 144 / (156 + 144)`.  We can test our findings against the expected proportions using the `chisq.test()` function.  The first argument is a numeric vector containing the actual counts.  The `p =` argument holds a numerical vector containing the expected proportions, which must sum to $1.0$.
 
 ```{r Chi square goodness of fit test}
 chisq.test(c(156, 144),
@@ -57,7 +57,7 @@ Since we only have a sample space of two elements, we have a single degree of fr
 
 ## The $chi^2$ test for independence
 
-The $chi^2$ test for independence measures, as the name implies, whether two categorical variables are independent.  In our dataset we also have a categorical variable named `Group`.  We can inspected it with the `table()` function too.
+The $chi^2$ test for independence measures, as the name implies, whether two categorical variables are independent.  In our dataset, we also have a categorical variable named `Group`.  We can inspected it with the `table()` function too.
 
 ```{r Sample space elements count for the Group variable}
 table(df$Group)
@@ -84,25 +84,25 @@ The $chi^2$ test works on the principle of subtracting an expected table, $E$, f
 
 $$ \chi^2 = \frac{\sum_{i=1}^{n} \left( \text{O}_i - \text{E}_i \right)^2}{\text{E}_i} \tag{1}$$
 
-This simulated study had a total of $300$ subjects.  Some $150$ were in group A and $150$ in group B.  Conversely, $156$ improved and $144$ did not.  Since the observed table is $ 2 \times 2 $ in size, the expected table will be as well.  Each value in the latter is determined by its position.  For the value in row $1$, column $1$, we multiply the sum of row $1$ and column $1$ in the observed table and divide it by the total.  This would be $156 \times 150 \div 300 = 78$.  The same goes for the other three values.  The _p_ value is calculated from the $\chi^2$ distribution for the given degrees of freedom.
+This simulated study had a total of $300$ subjects.  Some $150$ were in group A and $150$ in group B.  Conversely, $156$ improved and $144$ did not.  Since the observed table is $ 2 \times 2 $ in size, the expected table will be as well.  Each value in the latter is determined by its position.  For the value in row $1$, column $1$, we multiply the sum of row $1$ and column $1$ in the observed table and divide it by the sample total.  This would be $156 \times 150 \div 300 = 78$.  The same goes for the other three values.  The _p_ value is calculated from the $\chi^2$ distribution for the given degrees of freedom.
 
 We need not confine ourselves to $2 \times 2 $ contingency tables.  If each nominal categorical variable has more than two elements in their sample spaces, say $n$ and $m$, we would create a $n \times m $ table.
 
-Note that the $\chi^2$ distribution is a continuous distribution, yet our nominal categorical variable is, in essence, a discrete variable.  Yates' correction for continuity is sometimes used to solve this _problem_ of possible over correction.  It aims at correcting this _problem_ created by assuming that the discrete probabilities of counts in the table can be approximated by a continuous distribution.  It subtracts a half ($0.5$) from the each subtraction of the expected from the observed table.  It is shown in equation (2), but is not commonly used.
+Note that the $\chi^2$ distribution is a continuous distribution, yet our nominal categorical variable is, in essence, a discrete variable.  Yates' correction for continuity is sometimes used to solve this _problem_ of possible over correction.  It aims at correcting this _problem_ created by assuming that the discrete probabilities of counts in the table can be approximated by a continuous distribution.  It subtracts a half, ($0.5$), from each subtraction of the expected from the observed table.  It is shown in equation (2), but is not commonly used.
 
 $$ \chi^2 = \frac{\sum_{i=1}^{n} \left( |  \text{O}_i - \text{E}_i | - 0.5 \right)^2}{\text{E}_i} \tag{2}$$
 
-One problem that arises from this approximation of a discrete frequency distribution and that we must consider is that of a small sample size.  As a rule of thumb, we run into this problem with the $\chi^2$ test for independence if $80$% of more of the table entries have less than five samples.  In this case, we make use of Fisher's exact test.
+One problem that arises from this approximation of a discrete frequency distribution, and that we must consider, is that of a small sample size.  As a rule of thumb, we run into this problem with the $\chi^2$ test for independence if $80$% or more of the table entries have less than five samples.  In this case, we make use of Fisher's exact test.
 
 ## Fisher's exact test
 
-Fisher's test is terms an exact test, as the _p_ value is calculate directly and does not follow from a sampling distribution.  This test also requires the creation of a contingency table, but it is limited to a $ 2 \times 2 $ table.  If there are more than two elements in the sample space of either of the categorical variables, then they have to be combined in way that makes sense.
+Fisher's test is termed an exact test, as the _p_ value is calculated directly.  It does not follow from a sampling distribution.  This test also requires the creation of a contingency table, but it is limited to a $ 2 \times 2 $ table.  If there are more than two elements in the sample space of either of the categorical variables, then they have to be combined in a way that makes sense fr=or the research question at hand.
 
 The equation for Fisher's exact test for a total sample size of $N$, is shown in equation (3).
 
 $$ \text{contingency table} = \begin{pmatrix} a & b \\ c & d \end{pmatrix} \\ p = \frac{\left( a + b \right)! \left( c + d  \right)! \left( a + c \right)! \left(  \right)!b + d }{a! b! c! d! N!} \tag{3}$$
 
-The `fisher.test()` function uses equation (3).  The values have to be entered as a matrix, which we create below.  Note that we list all four values, but then specifies that we require two rows.  This will neatly split the data after the first two values.  Be sure then to enter the values in to correct order when copying from your data.
+The `fisher.test()` function uses equation (3).  The values have to be entered as a matrix, which we create below.  Note that we list all four values, but then specify that we require two rows.  This will neatly split the data after the first two values.  Be sure to enter the values in to correct order when copying from your data.
 
 ```{r Creating a contingency table with small sample counts}
 contingency <- matrix(c(3, 4, 6, 2),  # The fisher.test function requires a matrix as imput
@@ -118,7 +118,7 @@ We note a _p_ value of $0.31$.
 
 ## McNemar test
 
-This test is used for matched pairs of subject.  Two categorical variables are used and data point values are captured for both in each subject.  In practice these are either _before_ and _after_ variables or homozygtic twins, and so on.
+This test is used for matched pairs of subjects.  Two categorical variables are used and data point values are captured for both in each subject.  In practice, these are either _before_ and _after_ variables or homozygotic twins, and so on.
 
 Both variables require a dichotomous outcome, i.e. the sample space only contains two elements.  This results in a $ 2 \times 2 $ contingency table.  The equation results in a $\chi^2$ value with a single degree of freedom.  This is shown in equation (4).
 
@@ -133,7 +133,7 @@ contingency <- matrix(c(101, 59, 121, 34),
 contingency
 ```
 
-Note how, in our contingency table, that the before values run across the rows and that the after values run across the columns with  the positive outcome listed first and the negative outcome second.
+Note how, in our contingency table, the before values run across the rows and that the after values run across the columns with  the positive outcome listed first and the negative outcome second.
 
 The `mcnemar.test()` function calculates the $\chi^2$ and _p_ value for us, based on a single degree of freedom.
 
@@ -146,5 +146,4 @@ Note that we once again ignore continuity correction.
 
 ## Conclusion
 
-The various test for categorical variables are very commonly used in the literature.  Make sure to use the correct test based on the research question and the sample size.
-
+The various tests for categorical variables are very commonly used in the literature.  Make sure to use the correct test based on the research question and the sample size.

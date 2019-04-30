@@ -22,16 +22,28 @@ setwd(getwd())
 
 ## Preamble
 
+Summarizing data through the use of descriptive statistics is greatly enhanced by visualizing the data.  Plots, figures, and graphs provide for rich insight into the knowledge hidden in the data.  Specific graphs are tailored to specific variable types and it is important to consider this.
+
+The base R language can create a great number of plots.  These can be modified to create publication ready figures.  In this chapter we will look at some of the most commonly used plots.
+
+There is also a rich set of libraries available that expand on the creation of graphs.  It is well worthwhile to explore these on your own.  They include the ubiquitous `ggplot2` and the interactive `plotly` libraries.
+
 ## Data import
+
+We are going to use the `readr` and `dplyr` libraries in this chapter.
 
 ```{r Library import, message=FALSE, warning=FALSE}
 library(readr)
 library(dplyr)
 ```
 
+Below, we import the now familiar `ProjectData.csv` file.  We will use the data in this spreadsheet to create our plots.
+
 ```{r Importing the ProjectData spreadsheet file, message=FALSE}
 df <- read_csv("ProjectData.csv")
 ```
+
+Just as a reminder, we explore the variables in our dataset using the `names()` function.  Pay particular attention to the data types as we decide which plots to visualize the data with.
 
 ```{r Variables}
 names(df)
@@ -39,15 +51,15 @@ names(df)
 
 ## Strip plots
 
-Strp plots are also called dot plots.  The represent data point values for a variable along a single axis.  It is more common for these plots to visualize discrete numerical variables, but they can also be used for continuous numerical variables and for nominal categorical variable that are expressed as numerical values.  The latter is better represented by bar plots, though.
+Strip plots are also called dot plots.  We will use strip plots to introduce the way in which plots are created in R.  They represent data point values for a variable along a single axis.  It is more common for these plots to visualize discrete numerical variables, but they can also be used for continuous numerical variables and for nominal categorical variable that are expressed as numerical values.  The latter is better represented by bar plots, though.
 
-Below, we create a strip plot to visualize _Age_ variable as an example of discrete data (since we only captured integer values).
+Below, we create a strip plot to visualize the `Age` variable as an example of discrete data (since we only captured integer values).
 
 ```{r Strip plot of age}
 stripchart(df$Age)
 ```
 
-Our first impression is that this is not a very useful plot.  We have $500$ data point value and they all seem to be plotted on top of each other.  There is also no title and no _x_-axis label.  Let's start by adding some jitter to the dots to try and visualize all of them.  If there are a large number of data point values, this might not solve the problem.
+Our first impression is that this is not a very useful plot.  We have $500$ data point values and they all seem to be plotted on top of each other.  There is also no title and no _x_-axis label.  Let's start by adding some jitter to the dots to try and visualize all of them.  If there are a large number of data point values, this might not solve the problem.
 
 ```{r Strip plot with jitter}
 stripchart(df$Age,
@@ -74,21 +86,25 @@ In essence this is very much a bar plot, though, so let's take a look.
 
 ## Bar plot
 
-Bar plots give an indication of the number of individual data point values from the sample space of a variable.  As such they are excellent for categorical variables, but can also be used for discrete numerical variables.  Since both categorical variables and discrete numerical values are well, _discrete_, the bars have gaps between them to indicate that each of items in the sample sapce for the variable is distinct from another.  They do not form a continuum as in continuous numerical variables.
+Bar plots give an indication of the number of individual data point values from the sample space of a variable.  As such they are excellent for categorical variables, but can also be used for discrete numerical variables.  Since both categorical variables and discrete numerical values are well, _discrete_, the bars have gaps between them to indicate that each of the items in the sample space for the variable is distinct from another.  They do not form a continuum as in continuous numerical variables.
 
-They height of each bar indicates the number of times an element from the sample space of a variable appears in the data.  There are a number of options for bar plots.  Let's take a look at these and also introduce some new options for plots in R.
+The height of each bar indicates the number of times an element from the sample space of a variable appears in the data.  There are a number of options for bar plots.  Let's take a look at these and also introduce some new options for plots in R.
 
 ### Simple bar plot
+
+A simple bar plot shows vertical bars, representing the count of each unique sample space element for the discrete variable.
 
 ```{r Simple bar plot}
 barplot(table(df$Group),
         main = "Number of patients in each group",
         xlab = "Group",
         ylab = "Count",
-        las = 1)
+        las = 1)  # Turns the y-axis values upright
 ```
 
-### Horizonatl bar plot
+### Horizontal bar plot
+
+By setting the `horiz =' keyword argument to `TRUE`, we get horizontal bars
 
 ```{r Horizontal bar plot}
 barplot(table(df$Survey),
@@ -99,12 +115,14 @@ barplot(table(df$Survey),
         las = 1)
 ```
 
+We captured the ordinal categorical variable data point values for `Survey` as the numerical values $1,2,3,4$, and $5$.  In fact, they represent the sample space values: _Strongly disagree, Disagree, Neither, Agree_, and _Strongly agree_.  We can add the using the `names.arg =` keyword argument.
+
 ```{r Bar plot with labels}
 barplot(table(df$Survey),
         main = "Survey question",
         xlab = "Survey question answers",
         ylab = "Count",
-        names.arg = c("Storngly disagree",
+        names.arg = c("Strongly disagree",
                       "Disagree",
                       "Neither",
                       "Agree",
@@ -113,6 +131,8 @@ barplot(table(df$Survey),
 ```
 
 ### Patterned bar plot
+
+Instead of a solid color, we can add a fine pattern to fill the bars.  Below, we stipulate the border color for the bars, use grey as the fill color, and set a pattern with a low density.
 
 ```{r Patterned horizontal bar plot}
 barplot(table(df$Survey),
@@ -128,6 +148,9 @@ barplot(table(df$Survey),
 
 ### Colored bar plot
 
+Although most journals require monochrome figures, R does not limit our ability to add color.  Below, we specify the color of each of the five bars.  Many colors in R have specific names, most of which are as we would expect.
+
+
 ```{r Colored bar plot}
 barplot(table(df$Survey),
         main = "Survey question",
@@ -139,6 +162,8 @@ barplot(table(df$Survey),
         density = 20,
         las = 1)
 ```
+
+A common form of bar charts is the stacked bar chart.  We can use it to show the counts of a discrete variable for more than one categorical group.
 
 ```{r Stacked bar plot}
 barplot(table(df$Group, df$Survey),
@@ -153,6 +178,8 @@ barplot(table(df$Group, df$Survey),
 ```
 
 ### Grouped bar plot
+
+For those that find stacked charts a bit uninformative (which can happen when the counts are very close), we can group the bars.
 
 ```{r Patterned bar plot in groups}
 barplot(table(df$Group,
@@ -170,7 +197,7 @@ barplot(table(df$Group,
 
 ## Histogram
 
-The histogram gives a count of the number of times a value from a continuous numerical variable appears.  Since these variables are continuous, though, we have to create _bins_, i.e. lower and upper bounds between which the occurrences are counted.  Let's take a look at an example to make this clear using the `hist()` function.
+The histogram gives a count of the number of times a value, from a continuous numerical variable, appears.  Since these variables are continuous, though, we have to create _bins_, i.e. lower and upper bounds between which the occurrences are counted.  Let's take a look at an example to make this clear.  We use the `hist()` function to accomplish this.
 
 ```{r Histogram of patient age with density pattern}
 hist(df$Age,
@@ -181,7 +208,7 @@ hist(df$Age,
      las = 1)
 ```
 
-It seem as if the default plot created bins in five year intervals so that we ended up with $10$ bins.  We can use the `break =` argument to change this behaviour.  The value that we pass to this argument wil determin ethe number of bins.
+It seem as if the default plot created bins in five year intervals so that we ended up with $10$ bins.  We can use the `break =` argument to change this behavior.  The value that we pass to this argument will determine the number of bins.
 
 ```{r Histogram of ages with five bins}
 hist(df$Age,
@@ -191,6 +218,10 @@ hist(df$Age,
      ylab = "Count",
      las = 1)
 ```
+
+Five breaks we formed allowing for the creation of six bins.
+
+We can add a count to each bar with the `labels = TRUE` argument.  Sometimes the top of the numbers are cut off.  The alleviate this problem, we create a bit more space by increasing the $y$ axis range.  Below the `ylim = ` keyword argument is set to `0` to `90`.
 
 ```{r Histogram with labels}
 hist(df$Age,
@@ -202,7 +233,7 @@ hist(df$Age,
      las = 1)
 ```
 
-Now we have $10$ year bins.  We can ctually pass a vector of value to determine the bins.  We include the minimum and maximum values to show the outer bounds.  Note that we need not create bins of equal size.
+Now we have $10$ year bins.  We can actually pass a vector of values to determine the bins.  We include the minimum and maximum values to show the outer bounds.  Note that we need not create bins of equal size.
 
 ```{r Histogram with specified bin boundaries}
 hist(df$Age,
@@ -214,10 +245,10 @@ hist(df$Age,
 
 Under these circumstances, we no longer have a count, but rather a relative frequency (fractional count).  This can also be forced with the `freq = FALSE` argument.
 
-You may wonder in which bins the border cases are included.  In the plot above, for example, we need to know if a patient who is $40$ years of age is counted in the left-most bin or in the larger (broader) bin.  By default, the inclusion is on the minimum border.   Therefor this patient will be counted in the broader bin.  The `right = TRUE` argument changes this behaviour to the upper bound value.
+You may wonder in which bins the border cases are included.  In the plot above, for example, we need to know if a patient who is $40$ years of age is counted in the left-most bin or in the larger (broader) bin.  By default, the inclusion is on the minimum border.   Therefor this patient will be counted in the broader bin.  The `right = TRUE` argument changes this behavior to the upper bound value.
 
 ```{r Histogram for more than one group}
-transparent_dark_grey = rgb(0.2, 0.2, 0.2, 0.5)
+transparent_dark_grey = rgb(0.2, 0.2, 0.2, 0.5)  # Specifying the RGBA values for the color
 transparent_light_grey = rgb(0.8, 0.8, 0.8, 0.5)
 hist((df %>% filter(Group == "I") %>% select(Age))$Age,
      col = transparent_dark_grey,
@@ -236,6 +267,8 @@ legend("topright",
 
 ## Density plots
 
+A density plot creates a mathematical formula to _smooth out_ the histogram.  It is a great visual aid to look at the shape of the distribution of the data point values.  below, we note that our patient ages as only somewhat normally distributed.
+
 ```{r A simple density plot}
 plot(density(df$Age),
      main = "Distribution of patient ages",
@@ -246,9 +279,9 @@ plot(density(df$Age),
 
 ## Box and whisker plots
 
-These are the most common plots to show the distribution of numerical variables for one or more categorical or discrete groups.
+These are the most common plots used to show the distribution of numerical variables for one or more categorical or discrete groups.  In the code chunk below, we look at the age distribution of each of the two groups.
 
-```{rBox plot of ages per group}
+```{r Box plot of ages per group}
 boxplot(df$Age ~ df$Group,
         col = c(transparent_dark_grey, transparent_light_grey),
         boxwex = 0.4,  # Width of boxes as a fraction
@@ -262,7 +295,11 @@ legend("topright",
        pch = 15)
 ```
 
+The dark middle bar indicates the value of the median (or second quartile).  The upper and lower edges of the boxes are the values for the third and first quartiles.  If there are no statistical outliers, the whiskers stretch out to the maximum (top) and minimum (bottom) values.  Values that are more than $1.5$ times the interquartile range more than the third quartile or less than the first quartile will be indicated as separate dots beyond the whiskers.  The latter will then be indicative of this limit of _outliers_.
+
 ## Scatter plots
+
+Scatter plots are used to show the correlation between two numerical variables for each subject in a dataset.  Each dot is represents the value of one of the variables on the $x$ axis and the other variable on the $y$ axis.
 
 ```{r Age vs weight}
 plot(df$Age, # Independent variable (x-axis)
@@ -272,6 +309,9 @@ plot(df$Age, # Independent variable (x-axis)
      ylab = "Weight (in lbs)")
 ```
 
+In the chapter on correlation and linear models, we will learn how to draw a line as a model for our data.  We add this with the `abline()` function below.  It is the `lm()` function used as an argument that does the actual calculation.  More on this in the mentioned, upcoming chapter.
+
+
 ```{r Adding a regression line}
 plot(df$Age, # Independent variable (x-axis)
      df$Weight,  # Dependent variable (y-axis)
@@ -280,6 +320,8 @@ plot(df$Age, # Independent variable (x-axis)
      ylab = "Weight (in lbs)")
 abline(lm(df$Weight ~ df$Age))
 ```
+
+There are a great number of arguments that we can use to control the look of a plot.  have a look at the code comments in the plot below to get a glimpse at the power of plotting in R.
 
 ```{r Controlling the axes}
 plot(df$Age, # Independent variable (x-axis)
@@ -314,21 +356,11 @@ axis(2,
      at = seq(110, 230, by = 20))
 ```
 
-```{r}
-set.seed(123)
-x_values = seq(1, 100, by = 1)
-y_values = cumsum(rnorm(100))
-plot(y_values,
-     type = "l")
-abline(lm(y_values ~ x_values), col = "orange")
-```
-
-
 ## Multiple plots
 
-At times it makes sense to create more than one plot in a figure.  R allows for great control over placement of different plot.
+At times it makes sense to create more than one plot in a figure.  R allows for fine control over placement of different plot.
 
-In the code below we use a single row with two columns for our layout.  We plot both a histogram and a pie plot of the same data.
+In the code below, we use a single row with two columns for our layout.  We plot both a bar plot and a pie plot of the same data.
 
 A quick note on pie plots:  Pie plots are not good at providing accurate visual information, and hence, were not even discussed in this tutorial.  Even the help section states the following: _Pie charts are a very bad way of displaying information. The eye is good at judging linear measures and bad at judging relative areas. A bar chart or dot chart is a preferable way of displaying this type of data._
 
@@ -348,11 +380,11 @@ pie(table(df$Survey),
     col = grey_five)
 ```
 
-The graphical parameter fig lets us control the location of a figure precisely in a plot.
+The graphical parameter `par(fig =)` lets us control the location of a figure precisely in a plot.
 
-We need to provide the coordinates in a normalized form as c(x1, x2, y1, y2). For example, the whole plot area would be c(0, 1, 0, 1) with (x1, y1) = (0, 0) being the lower-left corner and (x2, y2) = (1, 1) being the upper-right corner.
+We need to provide the coordinates in a normalized form, i.e. as `c(x1, x2, y1, y2)`. For example, the whole plot area would be `c(0, 1, 0, 1)` with `(x1, y1) = (0, 0)` being the lower-left corner and `(x2, y2) = (1, 1)` being the upper-right corner.
 
-Note: we have used parameters cex to decrease the size of labels and mai to define margins.
+Note: we have used parameters `cex` to decrease the size of labels and `mai` to define margins.
 
 ```{r Specifying exact positions}
 # make labels and margins smaller
@@ -393,5 +425,9 @@ boxplot(rchisq(100, df = 2),
 dev.off()  # Search for dev.off in the Help tab
 ```
 
+## Conclusion
 
+Whole textbooks can be written on plotting in R.  It is best to explore all the plots that are available.  Fortunately, there is a lot of information in the Help section in RStudio.  Frequently consult this section to learn more about all the different arguments that can be used to modify your plots.
+
+Plots tell a visual story and help us understand our data.  Use them liberally in your data analysis.
 

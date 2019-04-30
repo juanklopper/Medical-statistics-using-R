@@ -21,43 +21,41 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Preamble
 
-Welcome to this course on medical statistics for domain experts (medical specialists and specialists in training).
+Welcome to this course on healthcare and bio-science statistics for domain experts.  These busy healthcare workers and students often do not have the time to invest in formal statistical training.  Such training, filled with esoteric equations and formulas, often alienate these professionals.  This textbook uses the R language for teaching statistics.  The RStudio coding environment lends itself perfectly for the training in R, the leading software for statistical computing.  Teaching statistics with the aid of software is, in my experience, the best method for domain experts.
 
-In South Africa, as in other parts of the world, the completion of a research project is mandatory during training.  Without this project, registration with the Health Professions Council as a specialist is not possible.  Trainees are required to be the lead investigator.  They may complete the project in the form of a mini-dissertation or submit it as a paper for publication (the latter together with a literature review).  External examiners are appointed to grade these projects.
+In most parts of the world, the completion of a research project is mandatory during training, at either undergraduate or postgraduate level.  Unfortunately, little support for data analysis and computational thinking is provided at some institutions.  As an example, we can refer to the lack of statistical training for postgraduate students in the health science in South Africa. [Nirav Patel, Poobalan Naidoo, Martin Smith, Jerome Loveland, Theshni Govender, Juan Klopper.  South African surgical registrar perceptions of the research project component of training.  SAMJ.  Vol 106, no.2 (2016).]
 
-Unfortunately, almost no support with respect to data analysis is provided.  Statistics does not form an important part of undergraduate medical training and no formal training exists for postgraduate students. [Nirav Patel, Poobalan Naidoo, Martin Smith, Jerome Loveland, Theshni Govender, Juan Klopper.  South African surgical registrar perceptions of the research project component of training.  SAMJ.  Vol 106, no.2 (2016).]
+To fill this void, I have taken on the role of statistician and data analyst for many of the research projects in the Health Sciences Faculty at the University of Cape Town.  I have created an award winning massive open online course on the Coursera platform, have many tutorials on YouTube, and four courses on Udemy.  All in an effort to help those wanting to learn about healthcare and bio-science statistics.
 
-Over the past three years, I have taken on the role of statistician and data analyst for many of the projects in the Health Sciences Faculty.  I have created an award winning massive open online course on the Coursera platform, have many tutorials on YouTube, and four courses on Udemy.  All in an effort to help those wanting to learn about medical statistics.
-
-Towards the end of last year, I started putting together a series of formal face-to-face lectures in medical statistics to support our postgraduate students.  The aim is to empower them to do their own data analysis.  The skill to do this is an absolute necessity in a resource constrained research environment.  I furthermore view the ability to do data analysis as an integral skill for medical specialists.  It is armed with the knowledge of statistics that a specialist can critically view the published literature to inform their practice as independent practitioners.  Reading the introduction and conclusion sections of a paper and blindly believing every statement is not professionally acceptable.
-
-This lecture series will use the R language for statistical analysis.  The RStudio coding environment lends itself perfectly for the training in and use of R, the leading software for statistical computing.  Let's get going.
+Towards the end of last year, I started putting together a series of formal face-to-face lectures in healthcare statistics to support our postgraduate students.  The aim is to empower them to do their own data analysis.  The skill to do this is an absolute necessity in a resource constrained research environment.  I furthermore view the ability to do data analysis as an integral skill for healthcare professionals.  It is armed with the knowledge of statistics that a provider can critically view the published literature to inform their practice independently.  Reading the introduction and conclusion sections of a paper and blindly believing every statement is not acceptable.
 
 ## R markdown file
 
-Statistical analysis in R can be done suing a simple script (under the File menu or the Green PLUS button under it).  While completely acceptable, it is much more elegant to use an R markdown file.  It allows for the creation of a much richer research document.
+All the files for this textbook is available on Github.
 
-This document was created as an R markdown file.  It allows for the use of simple markdown to style the document; the end-result of which can be exported as a Word document, a web-page, or even a PDF.
+Statistical analysis in R can be done using a simple script (under the File menu or the Green PLUS button under it).  While completely acceptable, it is much more elegant to use an R markdown file.  It allows for the creation of a much richer research document.
 
-A new R markdown file can created from the File menu or from the drop-down menu containing the green PLUS symbol right below the File menu.  When a new file is created, choose and appropriate name for the file and add your name.  The rest of the new file creation pop-up text box can be left at their default values.
+This document, for instance, was created as an R markdown file.  It allows for the use of simple markdown to style the document; the end-result of which can be exported as a Word document, a web-page, or even a PDF.
 
-The top of a new file is code written in YAML.  You will note the file name and the name of the author that you initially entered appears here, together with the current date.  You can change these value manually, but take care to preserve the structure. (The YAML code to add a table of content was added manually and can be copied if you so wish.  Addtional HTML code for heading colors and a logo was added and will be explained in class.  The date was also removed manually.)
+A new R markdown file can created from the File menu or from the drop-down menu containing the green PLUS symbol right below the File menu.  When a new file is created, choose and appropriate name for the file and add your name.  The rest of the _new file creation pop-up text box settings_, can be left at their default values.
 
-Every new R markdown file contains some template text.  Everything from the `## R markdown` section and below can be highlighted and deleted.
+The top of a new file is code written in YAML (Just Another Markup Language).  You will note the file name and the name of the author that you initially entered, appears here, together with the current date.  You can change these values manually, but take care to preserve the structure. The YAML code to add a table of content was added manually and can be copied if you so wish.  To do so, download and open the file on Github.  Additional HTML code for heading text colors was added.  The date was also removed manually.
 
-Normal English sentences can be written anywhere on the page.  Headings are identified by hash-tag symbols, from one hash-tag, `#` to six hash-tags, `######`.  These are for decreasing sizes such that a single hash-tag is the largest text.  These are referred to as heading sizes.
+Every new R markdown file contains some template text.  Everything from the `## R markdown` section and below can be highlighted and deleted.  We will replace this with our own code.  It is worthwhile, though, to take a look at the template code once you become familiar with R and RStudio.
 
-Words within an area of normal English can be italicized or written in bold face.  To achieve the former, place an underscore directly in front of and after the selected word(s).  Double underscores will be shown as bold face font.
+Normal English sentences can be written anywhere on the page.  Headings are identified by hash-tag symbols, from one hash-tag, `#` to six hash-tags, `######`.  These are for decreasing sizes such that a single hash-tag is the largest text.  These are referred to as _heading sizes_.
 
-Words written within single tick marks are displayed as code when exporting the R markdown file as a webpage, Word document, or PDF file.  It is used for stylistic purposes in this course.  Number can be placed inside of dollar symbols.  This signifies the use of LaTex code for mathematical typesetting.  It is used in this course where appropriate.
+Words within an area of normal English can be italicized or written in bold face.  To achieve the former, place an underscore directly in front of and after the selected word(s).  Double underscores will be shown as bold face font when the file is exported as a Word document, HTML webpage, or PDF document.
 
-Code is written inside of _chunks_.  The shortcut keystroke for the creation of a chunk is __CTRL-ALT and I__ (or __CMD-OPT and I__ on a Mac).  Chunks start and end with three tick marks.  On a conventional keyboard, this is to the left of the `1` key at the top left.  The first line (directly after the first three tick marks) must contain the string `{r}`.  Chunks can be named and this lecture series follows this convention.  Names must be unique and are placed after the `r` above, i.e. `{r This is my first chunk}`.
+Words written within single tick marks are displayed as code when exporting the R markdown file in the format mentioned above.  On most keyboards, this is on the upper-left, next to the number `1` key.  It is used for stylistic purposes in this textbook.  Numbers can be placed inside of dollar symbols.  This signifies the use of LaTex code for mathematical typesetting.  It is used in this course where appropriate.
 
-Chunks of code can contain comment lines, preceded by a hash-tag symbol, `#`.
+Actual R code is written inside of _code chunks_.  The shortcut keystroke for the creation of a chunk is __CTRL-ALT and I__ (or __CMD-OPT and I__ on a Mac).  Chunks start and end with three tick marks.  As mentioned, this is to the left of the `1` key at the top left.  The first line (directly after the first three tick marks) must contain the string `{r}`.  Chunks can be named and this textbook follows this convention.  Names must be unique and are placed after the `r` above, i.e. `{r This is my first chunk}`.  Do not use any symbols other than letter, numbers, or space.
+
+Chunks of code can contain comment lines, preceded by a hash-tag symbol, `#`.  The R interpreter (the software that executes you code) ignores everything on a line of code that follows a hash-tag.
 
 ## Simple arithmetic
 
-Below, we create a code chunk and name it Addition.  We simply add some numbers.  Note the use of hash-tags inside of chunks.  Here they serve a different purpose.  They indicate comments and are all the text after a hash-tag is ignored when code is entered.
+Below, we create a code chunk and name it `Addition`.  We are simply going to add some numbers.  Note the use of hash-tags inside of chunks.  We use them to leave useful information, either to ourselves, for when reviewing our code at a later stage, or for others, who might be collaborating with us.
 
 Code chunks are executed by the keyboard shortcut showed in the code below.  Alternatively hit the right-facing, small green arrow to the right of the code chunk.
 
@@ -69,7 +67,7 @@ Code chunks are executed by the keyboard shortcut showed in the code below.  Alt
 
 The result `[1] 8` appears.  The answer is indeed $8$.  In many cases, we are going to see more than one value as a result.  Each one is given a numerical name, starting at $1$, hence the `[1]`.
 
-The next few chunks are appropriately names and showcase some common arithmetical operations.  Look at the code comments (after the hash-tags) for explanation.  Leave your own code comments as notes for future reference.  You can also write normal English sentences between the code chunks.  Just remember to use hash-tags for the heading sizes.
+The next few chunks are appropriately named and showcase some common arithmetical operations.  Look at the code comments (after the hash-tags) for explanation.  Leave your own code comments as notes for future reference.  You can also write normal English sentences between the code chunks.  Just remember to use hash-tags for the heading sizes.
 
 ```{r Subtraction}
 8 - 3 - 1
@@ -86,13 +84,13 @@ The next few chunks are appropriately names and showcase some common arithmetica
 ```
 
 ```{r Powers}
-# USe the ^ (SHFT-6 on most keyboards)
+# Use the ^ (SHFT-6 on most keyboards)
 3^2
 ```
 
 ## Mathematical functions
 
-R is in essence a _functional language_.  Below are four functions, `log()`, `log10()`, `exp()`, and `round()`.  These are in-built keywords that tell R to execute an instruction.  Arguments are passed to functions and these go inside of parentheses.  Functions use these values to act on.
+R is in essence a _functional language_.  Below are four functions, `log()`, `log10()`, `exp()`, and `round()`.  These are in-built keywords that tell R to execute an instruction.  Arguments are passed to functions and these go inside of the parentheses.  Functions use these values to act on.
 
 In the code chunk below, we calculate the natural logarithm of the number $10$.  The official keyword for the natural logarithm is `log()`.  The number $10$ is passed as an argument.
 
@@ -101,7 +99,7 @@ In the code chunk below, we calculate the natural logarithm of the number $10$. 
 log(10)
 ```
 
-Below are more mathematical functions in action.
+Below are more mathematical functions in action.  Look at the comments for more information and try some yourself.
 
 ```{r Logarithm base 10}
 # When requiring the log-base-10 use the log10() function
@@ -113,8 +111,10 @@ log10(1000)
 exp(1)
 ```
 
+Below is the `round()` function.  We use it to limit how many numbers are displayed.  It takes two arguments.  Note that the arguments are separated by a comma.  The second argument is not only a value, but has a keyword followed by an equal sign, followed by the value for that keyword.
+
 ```{r Round to with two decimal places}
-# The round() function reduces the number of decimnal places
+# The round() function reduces the number of decimal places
 # A second argument is passed to the round() function: digits = 2 indicating two decimal places
 # Note that arguments are separated by comma's
 round(1.2375,
@@ -131,13 +131,13 @@ R stores sets of values or names as vectors (also called _atomic vectors_) and a
 c(100, 200, 300, 400, 500)
 ```
 
-We can really specify that the values are integers by using the `L` suffix.
+We can specify that the values are integers by using the `L` suffix.
 
 ```{r Using the L suffix}
 c(100L, 200L, 300L)
 ```
 
-Apart from _integer_ values, the lements may also be decimal values (also called floating point numbers or _doubles_), Boolean values (true or false), and characters (_strings_ or words).
+Apart from _integer_ values, the elements may also be decimal values (also called floating point numbers or _doubles_), Boolean or logical values (true or false), and characters (_strings_ or words).
 Numbers can usually be written as such in code.  Words or sentences must be placed inside of quotation marks.
 
 ```{r Vector of Boolean value}
@@ -148,31 +148,31 @@ c(TRUE, FALSE, FALSE, TRUE)
 c("ARDS", "Pneumonia", "Pneumonia")
 ```
 
-The `is.vector()` function can check if we have indeed specified a vector.
+The `is.vector()` function can check if we have indeed created a vector.
 
 ```{r Checking on vectors}
 is.vector(c("ARDS", "Pneumonia", "Pneumonia"))
 ```
 
-The `typeof()` function can check on the type of the elemnts of a vector.
+The `typeof()` function can check on the type of the elements of a vector.
 
 ```{r Type of elements of a vector}
 typeof(c(TRUE, TRUE, FALSE))
 ```
 
-The `str()` function, short for _structure_ gives all of the above information.
+The `str()` function, short for _structure_, gives all of the above information.
 
 ```{r}
 str(c(TRUE, TRUE, FALSE))
 ```
 
-Atomic vectors can be _nested_, but always remain flat.
+Atomic vectors can be _nested_, but always remain _flat_.
 
 ```{r Nested vectors are flat}
 c(1, 2, c(3, c(4, 5)))
 ```
 
-Coercion attenps at transforming all element types to the same type.
+Coercion attempts at transforming all element types to the same type.
 
 ```{r A vector containing an integer, a double, and a Boolean value}
 c(1L, 2.0, FALSE, TRUE)
@@ -194,7 +194,7 @@ list(1L, 2.1, FALSE, TRUE, "R", c(1, "one"))
 is.list(list(1L, 2.1, FALSE, TRUE, "R", c(1, "one")))
 ```
 
-The elemnts of a vector can be given a name.
+The elements of a vector can each be given a name, called a _key_.
 
 ```{r Name each element of a vector}
 c(a = 1, b = 2, c = 3)
@@ -208,25 +208,25 @@ setNames(1:3, c("a", "b", "c"))
 
 ### Factors
 
-Factors help us dealing with categorical variables (words or strings).  Below is an atomic vector that contains elements of value `"a"` and `"b"`.
+Factors help us when dealing with categorical variables (words or strings).  Below is an atomic vector that contains elements of value `"a"` and `"b"`.
 
 ```{r A vector with character elements}
 c("a", "b", "b", "a")
 ```
 
-Clearly we have only two unique elements.  The `factor()` function will extract those unique values, called _levels_.
+Clearly we have only two unique elements.  The `factor()` function will extract those unique values, called _levels_ and display them.
 
 ```{r The unique elements in a character vector}
 factor(c("a", "b", "b", "a"))
 ```
 
-We can specify the unqiue values (levels) even if one or more of them do not appear as an element in the vector.
+We can specify the unique values (levels) even if one or more of them do not appear as an element in the vector.
 
 ```{r Specifying the levels}
 factor(c("Female", "Female", "Female"), levels = c("Female", "Male"))
 ```
 
-The `table()` function will count ow many times each level appears in the vector.
+The `table()` function will count how many times each factor (level) appears in the vector.
 
 ```{r Using the table function to count unique elements}
 table(factor(c("Female", "Female", "Female"), levels = c("Female", "Male")))
@@ -237,9 +237,9 @@ Whether we create vectors or list, each one of our creations is termed an _insta
 
 ## Computer variables
 
-As mentioned, instances of vectors and lists (among other things) can be stored in your computer's memory as an object.  The name given to the object is called a _computer variable_.  Each object is an instance of a certain type.  Below we create an instance of the type _vector_ (of integers) and store it as the computer variable name `sbp`.
+As mentioned, instances of vectors and lists (among other things) can be stored in your computer's memory as an object.  The name given to the object is called a _computer variable_.  Each object is an instance of a certain type.  Below, we create an instance of the type _vector_ (of integers) and store it as the computer variable name `sbp`.
 
-An object is assigned to a computer variable (name) by way of a leftward facing arrow, created by means of the less than and the minus signs.  The keyboard shortcut is __ALT and minus__ (__OPT and minus__ on a Mac).  Alternatively a simple equal sign, `=`, can be used, but the arrow is more quintessential R.
+An object is assigned to a computer variable (name) by way of a leftward facing arrow, created by means of the less than and the minus signs.  The keyboard shortcut is __ALT and minus__ (__OPT and minus__ on a Mac).  Alternatively a simple equal sign, `=`, can be used, but the arrow is more quintessentially R.
 
 ```{r Computer variable}
 sbp <- c(120, 125, 95, 185, 110)
@@ -275,7 +275,7 @@ Below we place the number $15$ through $85$in the proverbial bowl.  We instruct 
 
 You will also note the `set.seed()` function that precedes this random number selection code.  Any arbitrary integer can be passed as argument.  It forces the pseudo-random number generator to follow a fixed pattern and spit out the exact same values every time the code is run.  This is done here simply for reproducibility purposes.
 
-The `sample()` function as used below takes three arguments.  While the `sample()` function will return a different set of elements each time the code is excuted (generating waht is called pseudo-random numbers), we can force R to return the same values each time the code is run by using the `set.seed()` function.  For any given value passed as argument, the same random values will be returned.  This is helpful when learning R as we can all work with the same values.
+The `sample()` function as used below takes three arguments.  While the `sample()` function will return a different set of elements each time the code is executed (generating what is called pseudo-random numbers), we can force R to return the same values each time the code is run by using the `set.seed()` function.  For any given value passed as argument, the same random values will be returned.  This is helpful when learning R as we can all work with the same values.
 
 ```{r Sampling from a set of integer values}
 set.seed(123)  # Forcing the same pseudo-random values
@@ -335,7 +335,7 @@ survey <- sample(1:5,
 
 ## Quick look at statistical test
 
-Although this is only the first lecture, we will slip in a quick statistical test.  Below we conduct a Student's _t_ test to see if there is a significant difference between the two lists of numbers that we created above.
+Although this is only the first lecture, we will slip in a quick statistical test.  Below, we conduct a Student's _t_ test to see if there is a significant difference between the two lists of numbers that we created above.
 
 ```{r Student t test}
 t.test(control_group_var,
@@ -345,4 +345,60 @@ t.test(control_group_var,
 
 ## Statistical variables
 
-The rest of this lecture will explain the different types of variables, i.e. categorical, numerical, etc.  Make your notes about this topic here.
+Statistical variables such as age, weight, length of hospital stay, etc., all belong to a certain type.  Student's _t_ test above was used to compare the difference in means.  We calculate a mean from a set of numbers.  When we list a set of diseases that patients might have, we cannot calculate a mean from these diseases.  As such, there are two main statistical variable types: _numerical_ and _categorical_ variables.
+
+### Numerical variables
+
+The clue to these variables are in the name.  They are indeed any variable for which we can collect data point values (a measurement taken from each patient) that are numbers.  These include age, length, weight, hemoglobin levels, systolic blood pressure, duration of operation, and many, many more.
+
+There are two types of numerical variables, although we will mostly encounter only one of them, the _ratio type_ numerical variable.  This sub-type has a true zero, indicating an _absence_, i.e. a heart rate of 0 is just that.  No heart rate.
+
+The more scarce sub-type is the _interval_ numerical variable.  These do not have a true zero.  The best example is temperature.  A temperature of $0$ <sup>o</sup> C or F is not the absence of temperature.  That would be $0$ kelvin or $0$K.
+
+### Categorical variables
+
+There are two sub-types of categorical variable as well.  The first is _nominal_ categorical variables.  These are simply _items_, such as names of disease, or gender, or residence (address), and so on.  We express these as words or sentences.  The most common example is a variable for which we collect data point values that are either _Yes_ or _No_.  Perhaps our data collection tool has a variable called _Smoking_.  For each patient we collect a data point value of either _Yes_ or _No_.
+
+The other sub-type is _ordinal_ categorical variables.  These items follow some sort of order.  Many of these variables have data point values that are collected as numbers.  Yet, they are not numerical variables.  Think of a pain scale.  We might ask patients to rate their postoperative pain on a scale from $0$ (no pain) to $10$ (excruciating pain).  There is certainly an order to the data point values for this variable which we might call _Postoperative pain score_.  The reason why this would not be a numerical variable is that there is no fixed difference between the data point values.  The difference between a $3$ and a $4$ is not the same as for between $4$ and $5$.  How would we even quantify this difference?  We can also not state that someone who states a score of $6$ has twice as much pain as someone who states a pain score of $3$.  Always be aware of these variable.  They should not have statistics such a mean or standard deviation calculated for them, because they are __not__ numerical in nature.
+
+### Discrete and continuous data
+
+Another way of classifying variable types is as _discrete_ and _continuous_.  The latter is used in conjunction with numerical variables.  More specifically, they identify data point values for which the sample space can take a practically infinite number of values.  The precision with which we can actually measure the data point values for these variable are only limited by our measuring tools.  Think of a patient's cholesterol level.  The laboratory equipment that we use will express an approximation of this value for each patient.  Given better equipment, we could get finer details (with more decimal point values).
+
+In practice, we see most numerical variables as continuous, even if we only capture integer (whole number) values.  Think of age.  Although we capture ages as $45$ or $18$, we can, in fact, go much further.  We could capture days, hours, minutes, seconds, milliseconds, and so on.
+
+Discrete variables on the other hand encompass all variables for which the sample space only contains specific values that cannot be further subdivided.
+
+## Sample spaces
+
+This is an important concept understand.  Every statistical variable has a sample space.  This is the set or the group of possible values that a random data point value for this variable might take.
+
+Imagine the that we are collecting data on whether or not a patient is currently smoking.  The sample space for this variable is _Yes_ and _No_.  If we are collecting data on the age of a group of patients, the sample space is a set of integers (whole numbers), say, between $18$ and $95$.
+
+As you might have realized, we will make use of the term _data point value_ for any measurement captured from a subject for a specific variable.
+
+Take care to understand the type of variable you are considering during each statistical calculation that you complete and the sample space for that variable.
+
+## Tidy data
+
+Hadley Wickham published a brilliant paper on the concept of tidy data. [Wickham H.  Tidy data.  Journal of Statistical Software.  2014. Vol 59 (10).]  The idea here is to have a spreadsheet (or data file) that adheres to certain standards.
+
+Most notably, we require that each subject or patient is assigned a row in the dataset and that each column represents a specific statistical variable.  Each variable must have a well-defined sample space.
+
+One of the most common mistakes in a dataset is to collect many data points for the same _variable_.  The dataset might have a column (variable) named _Comorbid disease_.  One patients has a data point value of _None_, while the next has a data point values _Hypertension_ and _Diabetes_ in the same cell (spreadsheet cell).  The next might have _Diabetes, Asthma_.  This is not tidy data.  Instead, this spreadsheet must have individual columns (variables) for _Hypertension_, _Diabetes_, _Asthma_, and so on.  The defined sample space for each of these might then be _Yes_, _No_, and _Unknown_.
+
+Another common mistake is the indiscriminate use of different spelling for each data point value or the indiscriminate use of upper and lowercase letters.  Examples might be _Anemia_ and for the next patient _Anaemia_, Or _Yes_ for one patient and _yes_ for the next.
+
+The last common mistake is that of trailing spaces.  This is where a data point value is entered in a spreadsheet cell, but a space is placed after a word.  These spaces are invisible, but when analyzed by statistical software a _Yes_ without a trailing space is seen as a different data point value as _Yes_ with a space after the _s_.
+
+Lastly, take care when creating statistical variables names in the first row of a spreadsheet file.  Don't use spaces or symbols other than letters and numbers.  If you have to use two or more words, place an underscore, `_`, between the words, i.e. `Diabetes_mellitus`.  This format is known as snake-case.  An alternative is camelCase, where the first word starts with a lowercase letter, but each subsequent word starts with an uppercase letter, i.e. `diabetesMellitus`.
+
+## Parameters and statistics
+
+Our aim with statistics is to examine a small sample of patients or subjects, taken at random from a much larger population.  We can almost never investigate the whole population.  Instead the calculation we make based on the data point values captured for our statistical variable of choice and used to infer some understanding of the population.  This means that someone elsewhere in the world can use our results and infer it when managing their patients.
+
+Any calculation we make from our sample such as the mean (average) or standard deviation is called a _statistic_.  When these same calculations are made from data for a whole population, we called its a _parameter_.
+
+## Conclusion
+
+This chapter was packed with information.  It will stand you in good stead to remember these important points when you start to collect and analyze your own data.  Refer back to it often as you become a seasoned statistician.
